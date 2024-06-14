@@ -3,10 +3,13 @@
         <div class="wrapper">
             <div class="img-block">
                 <img
-                    src="https://colorlib.com/etc/regform/colorlib-regform-7/images/signin-image.jpg"
+                    src="../assets/images/diet_blog1.jpg"
                     alt=""
+                    style="width: 100%; height: 100%"
                 />
-                <h2>Create an account</h2>
+                <router-link to="/signup">
+                    <h2>Create an account</h2>
+                </router-link>
             </div>
             <div class="info-block">
                 <h1 class="form-title">Sign up</h1>
@@ -22,7 +25,9 @@
                     <input type="checkbox" name="" id="tick" />
                     <label for="tick">Remember me</label>
                 </div>
-                <button class="login-btn">Log in</button>
+                <router-link to="/">
+                    <button class="login-btn">Log in</button>
+                </router-link>
             </div>
         </div>
     </div>
@@ -45,13 +50,13 @@
     width: 800px;
     height: 500px;
     display: flex;
+    column-gap: 46px;
     justify-content: space-between;
     align-items: center;
 }
-
 .form-title {
-    text-align: left;
-    margin: 0 0 33px;
+    text-align: center;
+    margin-bottom: 33px;
     font-size: 40px;
     color: black;
 }
@@ -61,22 +66,20 @@
 .input-group label {
     display: block;
     margin-bottom: 6px;
-    font-size: 24px;
+    font-size: 14px;
     color: black;
-    font-weight: lighter;
 }
 .input-group input {
-    display: block;
+    width: 100%;
     padding: 8px 12px;
     border: 0;
     border-bottom: 1px solid #999;
     outline: none;
-    width: calc(100% - 24px);
 }
 
 .login-btn {
     display: block;
-    width: 40%;
+    width: 100%;
     padding: 15px 39px;
     background-color: #6dabe4;
     font-size: 15px;
@@ -87,22 +90,20 @@
     margin: 40px 0;
     cursor: pointer;
 }
-.img-block {
-    width: 45%;
-    display: inline-block;
-    margin: 0 0 0 40px;
-}
-
 .info-block {
-    width: 40%;
-    display: inline-block;
-    margin: 0 40px 0 0;
+    width: 50%;
 }
 
 .box-group {
     margin: 20px 0;
+    display: flex;
+    align-items: center;
+    column-gap: 8px;
+    font-size: 14px;
 }
-
+.img-block{
+    width: 50%;
+}
 .img-block h2 {
     font-size: 15px;
     display: flex;

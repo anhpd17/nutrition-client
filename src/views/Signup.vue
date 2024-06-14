@@ -60,7 +60,9 @@
                     alt=""
                     style="width: 100%; height: 100%"
                 />
-                <a href="#">I am already a member</a>
+                <router-link to="/login">
+                    <p>I am already a member</p>
+                </router-link>
             </div>
         </div>
     </div>
@@ -77,14 +79,14 @@
 }
 .wrapper {
     border-radius: 24px;
-    padding: 60px 0;
+    padding: 60px 24px;
     background-color: #fff;
     width: 900px;
     box-shadow: 0 15px 16.83px 0.17px rgba(0, 0, 0, 0.05);
     display: flex;
     justify-content: center;
     align-items: center;
-    column-gap: 136px;
+    column-gap: 46px;
 }
 .input-group {
     display: flex;
@@ -118,11 +120,20 @@
     border-radius: 5px;
     margin-top: 25px;
     cursor: pointer;
+    width: 100%;
 }
-.signup-right a {
+.signup-left{
+    width: 50%;
+}
+.signup-left > h1{
+    font-size: 30px;
+}
+.signup-right p {
     display: block;
     text-align: center;
     color: #222;
     margin-top: 36px;
+    font-size: 14px;
+    text-decoration: underline;
 }
 </style>
