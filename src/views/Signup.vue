@@ -1,73 +1,94 @@
 <template>
     <div id="container">
         <div class="wrapper">
-            <div class="signup-left">
-                <h1>Sign up</h1>
-                <div class="signup-form">
-                    <div class="input-group">
-                        <div class="input-group-icon">
-                            <i class="fa-solid fa-user"></i>
+            <div v-if="!isSecondStep">
+                <div class="signup-left">
+                    <h1>Sign up</h1>
+                    <div class="signup-form">
+                        <div class="input-group">
+                            <div class="input-group-icon">
+                                <i class="fa-solid fa-user"></i>
+                            </div>
+                            <input
+                                type="text"
+                                placeholder="Your Name"
+                                id="name-input"
+                            />
                         </div>
-                        <input
-                            type="text"
-                            placeholder="Your Name"
-                            id="name-input"
-                        />
-                    </div>
-                    <div class="input-group">
-                        <div class="input-group-icon">
-                            <i class="fa-solid fa-envelope"></i>
+                        <div class="input-group">
+                            <div class="input-group-icon">
+                                <i class="fa-solid fa-envelope"></i>
+                            </div>
+                            <input
+                                type="email"
+                                placeholder="Your Email"
+                                id="email-input"
+                            />
                         </div>
-                        <input
-                            type="email"
-                            placeholder="Your Email"
-                            id="email-input"
-                        />
-                    </div>
-                    <div class="input-group">
-                        <div class="input-group-icon">
-                            <i class="fa-solid fa-lock"></i>
+                        <div class="input-group">
+                            <div class="input-group-icon">
+                                <i class="fa-solid fa-lock"></i>
+                            </div>
+                            <input
+                                type="password"
+                                placeholder="Password"
+                                id="password-input"
+                            />
                         </div>
-                        <input
-                            type="password"
-                            placeholder="Password"
-                            id="password-input"
-                        />
-                    </div>
-                    <div class="input-group">
-                        <div class="input-group-icon">
-                            <i class="fa-solid fa-lock"></i>
+                        <div class="input-group">
+                            <div class="input-group-icon">
+                                <i class="fa-solid fa-lock"></i>
+                            </div>
+                            <input
+                                type="password"
+                                placeholder="Repeat your password"
+                                id="confirm-password-input"
+                            />
                         </div>
-                        <input
-                            type="password"
-                            placeholder="Repeat your password"
-                            id="confirm-password-input"
-                        />
+                        <div class="accept-block">
+                            <input type="checkbox" name="" id="agree-term" />
+                            <span
+                                >I agree all statements in
+                                <a href="">Term of service</a></span
+                            >
+                        </div>
+                        <button class="signup-btn" @click="moveToSecondStep">
+                            Register
+                        </button>
                     </div>
-                    <div class="accept-block">
-                        <input type="checkbox" name="" id="agree-term" />
-                        <span
-                            >I agree all statements in
-                            <a href="">Term of service</a></span
-                        >
-                    </div>
-                    <button class="signup-btn">Register</button>
+                </div>
+                <div class="signup-right" style="width: 50%">
+                    <img
+                        src="../assets/images/diet_blog1.jpg"
+                        alt=""
+                        style="width: 100%; height: 100%"
+                    />
+                    <router-link to="/login">
+                        <p>I am already a member</p>
+                    </router-link>
                 </div>
             </div>
-            <div class="signup-right" style="width: 50%">
-                <img
-                    src="../assets/images/diet_blog1.jpg"
-                    alt=""
-                    style="width: 100%; height: 100%"
-                />
-                <router-link to="/login">
-                    <p>I am already a member</p>
-                </router-link>
-            </div>
+            <UserInfoSignup v-else :userInfo="userInfo" />
         </div>
     </div>
 </template>
-<script setup></script>
+<script setup>
+import UserInfoSignup from "./UserInfoSignup.vue";
+import { ref } from "vue";
+
+const isSecondStep = ref(false);
+const userInfo = ref({
+    Name: "",
+    DateOfBirth: "",
+    gender: "",
+    Weight: "",
+    Height: "",
+    fullName: "",
+});
+const moveToSecondStep = () => {
+    isSecondStep.value = true;
+};
+</script>
 <style scoped>
 #container {
     background-color: #f8f8f8;
@@ -122,10 +143,10 @@
     cursor: pointer;
     width: 100%;
 }
-.signup-left{
+.signup-left {
     width: 50%;
 }
-.signup-left > h1{
+.signup-left > h1 {
     font-size: 30px;
 }
 .signup-right p {

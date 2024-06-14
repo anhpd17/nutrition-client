@@ -15,24 +15,42 @@
                 <h1 class="form-title">Sign up</h1>
                 <div class="input-group">
                     <label for="username-input">Username</label>
-                    <input type="text" id="username-input" />
+                    <input ref="username" type="text" id="username-input" />
                 </div>
                 <div class="input-group">
                     <label for="password-input">Password</label>
-                    <input type="password" id="password-input" />
+                    <input ref="password" type="password" id="password-input" />
                 </div>
                 <div class="box-group">
                     <input type="checkbox" name="" id="tick" />
                     <label for="tick">Remember me</label>
                 </div>
                 <router-link to="/">
-                    <button class="login-btn">Log in</button>
+                    <button class="login-btn" @click="handleLogin">
+                        Log in
+                    </button>
                 </router-link>
             </div>
         </div>
     </div>
 </template>
-<script></script>
+<script>
+export default {
+    methods: {
+        handleLogin() {
+            console.log(this.$refs.username.value);
+            console.log(this.$refs.password.value);
+            this.$notify({
+                title: "Notice",
+                message: "Login Successfully",
+                duration: 3000,
+                type: "success",
+                position: "bottom-right",
+            });
+        },
+    },
+};
+</script>
 <style scoped>
 #container {
     height: 100vh;
@@ -101,7 +119,7 @@
     column-gap: 8px;
     font-size: 14px;
 }
-.img-block{
+.img-block {
     width: 50%;
 }
 .img-block h2 {
