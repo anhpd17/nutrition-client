@@ -21,12 +21,16 @@
                 </div>
                 <div class="content-page" style="padding: 24px 124px">
                     <el-table
+                        v-loading="isLoadingTable"
                         :data="filterTableData"
                         style="width: 100%"
                         height="460"
                     >
-                        <el-table-column label="Date" prop="date" />
                         <el-table-column label="Name" prop="name" />
+                        <el-table-column label="Calories" prop="calorie" />
+                        <el-table-column label="Carbs" prop="carbs" />
+                        <el-table-column label="Fat" prop="fat" />
+                        <el-table-column label="Protein" prop="protein" />
                         <el-table-column align="right">
                             <template #header>
                                 <el-input
@@ -63,16 +67,28 @@
     </MainLayout>
 </template>
 <script setup>
-import { computed, ref } from "vue";
+import { apiGet } from "../api/api";
+import { computed, ref, onMounted } from "vue";
 import MainLayout from "../layouts/MainLayout.vue";
 
 const search = ref("");
+const tableData = ref([]);
+const isLoadingTable = ref(false);
+
+onMounted(async () => {
+    isLoadingTable.value = true;
+    let res = await apiGet("/ingredient/findAll?take=10&page=1");
+    tableData.value = res;
+    isLoadingTable.value = false;
+});
+
 const filterTableData = computed(() =>
-    tableData.filter(
-        (data) =>
+    tableData.value.filter((data) => {
+        return (
             !search.value ||
-            data.name.toLowerCase().includes(search.value.toLowerCase())
-    )
+            data.name?.toLowerCase().includes(search.value.toLowerCase())
+        );
+    })
 );
 const handleEdit = (index, row) => {
     console.log(index, row);
@@ -80,29 +96,6 @@ const handleEdit = (index, row) => {
 const handleDelete = (index, row) => {
     console.log(index, row);
 };
-
-const tableData = [
-    {
-        date: "2016-05-03",
-        name: "Tom",
-        address: "No. 189, Grove St, Los Angeles",
-    },
-    {
-        date: "2016-05-02",
-        name: "John",
-        address: "No. 189, Grove St, Los Angeles",
-    },
-    {
-        date: "2016-05-04",
-        name: "Morgan",
-        address: "No. 189, Grove St, Los Angeles",
-    },
-    {
-        date: "2016-05-01",
-        name: "Jessy",
-        address: "No. 189, Grove St, Los Angeles",
-    },
-];
 </script>
 <style>
 .search-input input {

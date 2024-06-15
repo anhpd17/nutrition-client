@@ -25,28 +25,45 @@
                     <input type="checkbox" name="" id="tick" />
                     <label for="tick">Remember me</label>
                 </div>
-                <router-link to="/">
-                    <button class="login-btn" @click="handleLogin">
-                        Log in
-                    </button>
-                </router-link>
+                <button class="login-btn" @click="handleLogin">Log in</button>
             </div>
         </div>
     </div>
 </template>
 <script>
+import { apiPost } from "../api/api";
 export default {
     methods: {
-        handleLogin() {
-            console.log(this.$refs.username.value);
-            console.log(this.$refs.password.value);
-            this.$notify({
-                title: "Notice",
-                message: "Login Successfully",
-                duration: 3000,
-                type: "success",
-                position: "bottom-right",
-            });
+        async handleLogin() {
+            try {
+                let res = await apiPost("/auth/login", {
+                    userName: this.$refs.username.value,
+                    password: this.$refs.password.value,
+                });
+                localStorage.setItem(
+                    "tokenAuth",
+                    JSON.stringify({
+                        token: res,
+                        userName: this.$refs.username.value,
+                    })
+                );
+                this.$notify({
+                    title: "Notice",
+                    message: "Login Successfully",
+                    duration: 3000,
+                    type: "success",
+                    position: "bottom-right",
+                });
+                this.$router.push("/");
+            } catch (error) {
+                this.$notify({
+                    title: "Notice",
+                    message: "Login Failed! Please check your account",
+                    duration: 3000,
+                    type: "error",
+                    position: "bottom-right",
+                });
+            }
         },
     },
 };

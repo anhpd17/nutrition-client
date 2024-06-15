@@ -15,18 +15,27 @@
                     <h1 style="text-transform: uppercase; font-size: 32px">
                         Disease
                     </h1>
-                    <el-button type="success" style="padding: 24px"
+                    <el-button
+                        type="success"
+                        style="padding: 24px"
+                        :disabled="true"
                         >Add New</el-button
                     >
                 </div>
                 <div class="content-page" style="padding: 24px 124px">
                     <el-table
+                        v-loading="isLoadingTable"
                         :data="filterTableData"
                         style="width: 100%"
                         height="460"
                     >
-                        <el-table-column label="Date" prop="date" />
                         <el-table-column label="Name" prop="name" />
+                        <el-table-column label="VN Name" prop="name_vn" />
+                        <el-table-column label="Active" prop="isActive" />
+                        <el-table-column
+                            label="Description"
+                            prop="Description"
+                        />
                         <el-table-column align="right">
                             <template #header>
                                 <el-input
@@ -47,6 +56,7 @@
                                 <el-button
                                     size="small"
                                     type="danger"
+                                    :disabled="true"
                                     @click="
                                         handleDelete(scope.$index, scope.row)
                                     "
@@ -61,48 +71,93 @@
             </div>
         </template>
     </MainLayout>
+    <el-dialog v-model="visibleDetail" title="Edit Disease" width="600">
+        <el-form
+            :model="detailDisease"
+            :label-width="150"
+            label-position="left"
+        >
+            <el-form-item label="Name">
+                <el-input v-model="detailDisease.name" autocomplete="off" />
+            </el-form-item>
+            <el-form-item label="Name VI">
+                <el-input v-model="detailDisease.name_vn" autocomplete="off" />
+            </el-form-item>
+            <el-form-item label="Description">
+                <el-input
+                    v-model="detailDisease.Description"
+                    autocomplete="off"
+                />
+            </el-form-item>
+        </el-form>
+        <template #footer>
+            <div class="dialog-footer">
+                <el-button @click="visibleDetail = false">Cancel</el-button>
+                <el-button type="primary" @click="saveDisease">
+                    Save
+                </el-button>
+            </div>
+        </template>
+    </el-dialog>
 </template>
 <script setup>
 import MainLayout from "../layouts/MainLayout.vue";
-import { computed, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
+import { apiGet, apiPatch } from "../api/api";
+import { ElNotification } from "element-plus";
 
+const isLoadingTable = ref(false);
+const tableData = ref([]);
 const search = ref("");
+const detailDisease = ref(null);
+const visibleDetail = ref(false);
+
+onMounted(async () => {
+    isLoadingTable.value = true;
+    let res = await apiGet("/conditions/findAll");
+    tableData.value = res;
+    isLoadingTable.value = false;
+});
 const filterTableData = computed(() =>
-    tableData.filter(
+    tableData.value.filter(
         (data) =>
             !search.value ||
-            data.name.toLowerCase().includes(search.value.toLowerCase())
+            data.name?.toLowerCase().includes(search.value.toLowerCase())
     )
 );
 const handleEdit = (index, row) => {
-    console.log(index, row);
+    detailDisease.value = row;
+    visibleDetail.value = true;
 };
 const handleDelete = (index, row) => {
     console.log(index, row);
 };
 
-const tableData = [
-    {
-        date: "2016-05-03",
-        name: "Tom",
-        address: "No. 189, Grove St, Los Angeles",
-    },
-    {
-        date: "2016-05-02",
-        name: "John",
-        address: "No. 189, Grove St, Los Angeles",
-    },
-    {
-        date: "2016-05-04",
-        name: "Morgan",
-        address: "No. 189, Grove St, Los Angeles",
-    },
-    {
-        date: "2016-05-01",
-        name: "Jessy",
-        address: "No. 189, Grove St, Los Angeles",
-    },
-];
+const saveDisease = async () => {
+    try {
+        await apiPatch(
+            `/conditions/update/${detailDisease.value.id}`,
+            detailDisease.value
+        );
+        ElNotification({
+            title: "Notice",
+            message: "Update Successfully",
+            duration: 3000,
+            type: "success",
+            position: "bottom-right",
+        });
+    } catch (error) {
+        console.log(error);
+        ElNotification({
+            title: "Notice",
+            message: "Update Failed",
+            duration: 3000,
+            type: "error",
+            position: "bottom-right",
+        });
+    }
+    visibleDetail.value = false;
+};
 </script>
 <style>
 .search-input input {

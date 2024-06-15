@@ -25,9 +25,16 @@
                         style="width: 100%"
                         height="460"
                     >
-                        <el-table-column label="Date" prop="date" />
                         <el-table-column label="Name" prop="name" />
-                        <el-table-column align="right">
+                        <el-table-column
+                            label="Description"
+                            prop="Description"
+                        />
+                        <el-table-column label="Calories" prop="calorie" />
+                        <el-table-column label="Carbs" prop="carbs" />
+                        <el-table-column label="Fat" prop="fat" />
+                        <el-table-column label="Protein" prop="protein" />
+                        <el-table-column align="right" width="260">
                             <template #header>
                                 <el-input
                                     v-model="search"
@@ -64,11 +71,13 @@
 </template>
 <script setup>
 import MainLayout from "../layouts/MainLayout.vue";
-import { computed, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
+import { apiGet } from "../api/api";
 
 const search = ref("");
+const tableData = ref([]);
 const filterTableData = computed(() =>
-    tableData.filter(
+    tableData.value.filter(
         (data) =>
             !search.value ||
             data.name.toLowerCase().includes(search.value.toLowerCase())
@@ -81,28 +90,10 @@ const handleDelete = (index, row) => {
     console.log(index, row);
 };
 
-const tableData = [
-    {
-        date: "2016-05-03",
-        name: "Tom",
-        address: "No. 189, Grove St, Los Angeles",
-    },
-    {
-        date: "2016-05-02",
-        name: "John",
-        address: "No. 189, Grove St, Los Angeles",
-    },
-    {
-        date: "2016-05-04",
-        name: "Morgan",
-        address: "No. 189, Grove St, Los Angeles",
-    },
-    {
-        date: "2016-05-01",
-        name: "Jessy",
-        address: "No. 189, Grove St, Los Angeles",
-    },
-];
+onMounted(async () => {
+    let res = await apiGet("/dishes/findAll");
+    tableData.value = res;
+});
 </script>
 <style>
 .search-input input {

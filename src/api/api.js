@@ -71,6 +71,15 @@ export async function apiPut(endpoint, data) {
     }
 }
 
+export async function apiPatch(endpoint, data) {
+    try {
+        const response = await axiosInstance.patch(endpoint, data);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
 // Function to make a DELETE request
 export async function apiDelete(endpoint) {
     try {
