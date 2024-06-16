@@ -7,7 +7,7 @@
             <router-link to="/">
                 <div>Home</div>
             </router-link>
-            <router-link to="/">
+            <router-link to="/meal">
                 <div>Meals</div>
             </router-link>
             <router-link to="/ingredient">
@@ -22,7 +22,18 @@
             <router-link to="/dish">
                 <div>Dish</div>
             </router-link>
-            <router-link to="/signup">
+            <router-link to="/profile">
+                <div
+                    class="avatar"
+                    :style="{
+                        'background-color':
+                            avatarGenerate.generateColorByString('Duc Anh'),
+                    }"
+                >
+                    {{ avatarGenerate.getFirstLetterOfName("Duc Anh") }}
+                </div>
+            </router-link>
+            <!-- <router-link to="/signup">
                 <div
                     style="
                         border: 1px solid var(--main-color);
@@ -44,11 +55,13 @@
                 >
                     Log in
                 </div>
-            </router-link>
+            </router-link> -->
         </nav>
     </header>
 </template>
-<script setup></script>
+<script setup>
+import avatarGenerate from "../utils/avatarGenerator.js";
+</script>
 <style scoped>
 /* header */
 

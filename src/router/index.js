@@ -6,6 +6,8 @@ import Login from "../views/Login.vue";
 import Signup from "../views/Signup.vue";
 import Disease from "../views/Disease.vue";
 import Dish from "../views/Dish.vue";
+import Meal from "../views/Meal.vue";
+import UserProfile from "../views/UserProfile.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,11 +22,11 @@ const router = createRouter({
             component: Assessment,
             name: "Assessment",
         },
-        // {
-        //     path: "/meal",
-        //     component: Meal,
-        //     name: "Meal",
-        // },
+        {
+            path: "/meal",
+            component: Meal,
+            name: "Meal",
+        },
         {
             path: "/ingredient",
             component: Ingredient,
@@ -49,6 +51,11 @@ const router = createRouter({
             path: "/signup",
             component: Signup,
             name: "Signup",
+        },
+        {
+            path: "/profile",
+            component: UserProfile,
+            name: "UserProfile",
         },
         // {
         //     path: "/leave/detail",

@@ -31,7 +31,7 @@
                         <el-table-column label="Carbs" prop="carbs" />
                         <el-table-column label="Fat" prop="fat" />
                         <el-table-column label="Protein" prop="protein" />
-                        <el-table-column align="right">
+                        <el-table-column align="right" width="200">
                             <template #header>
                                 <el-input
                                     v-model="search"

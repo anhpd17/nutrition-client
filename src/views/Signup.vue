@@ -1,7 +1,10 @@
 <template>
     <div id="container">
         <div class="wrapper">
-            <div v-if="!isSecondStep">
+            <div
+                v-if="!isSecondStep"
+                style="display: flex; align-items: center; column-gap: 46px"
+            >
                 <div class="signup-left">
                     <h1>Sign up</h1>
                     <div class="signup-form">
@@ -11,6 +14,7 @@
                             </div>
                             <input
                                 type="text"
+                                v-model="authInfo.name"
                                 placeholder="Your Name"
                                 id="name-input"
                             />
@@ -21,7 +25,8 @@
                             </div>
                             <input
                                 type="email"
-                                placeholder="Your Email"
+                                v-model="authInfo.userName"
+                                placeholder="Your Username"
                                 id="email-input"
                             />
                         </div>
@@ -31,6 +36,7 @@
                             </div>
                             <input
                                 type="password"
+                                v-model="authInfo.password"
                                 placeholder="Password"
                                 id="password-input"
                             />
@@ -73,10 +79,18 @@
     </div>
 </template>
 <script setup>
+import { apiPost } from "../api/api";
 import UserInfoSignup from "./UserInfoSignup.vue";
 import { ref } from "vue";
 
 const isSecondStep = ref(false);
+const authInfo = ref({
+    userName: "",
+    password: "",
+    name: "",
+    email: "",
+    roleId: null,
+});
 const userInfo = ref({
     Name: "",
     DateOfBirth: "",
@@ -85,8 +99,27 @@ const userInfo = ref({
     Height: "",
     fullName: "",
 });
-const moveToSecondStep = () => {
-    isSecondStep.value = true;
+const moveToSecondStep = async () => {
+    try {
+        let res = await apiPost("/auth/create", authInfo.value);
+        ElNotification({
+            title: "Notice",
+            message: "Create account Successfully",
+            duration: 3000,
+            type: "success",
+            position: "bottom-right",
+        });
+        isSecondStep.value = true;
+    } catch (error) {
+        console.log(error);
+        ElNotification({
+            title: "Notice",
+            message: "Create account Failed",
+            duration: 3000,
+            type: "error",
+            position: "bottom-right",
+        });
+    }
 };
 </script>
 <style scoped>

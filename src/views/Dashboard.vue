@@ -1033,6 +1033,18 @@ section {
     }
 }
 </style>
-<script setup>
+<script>
 import MainLayout from "../layouts/MainLayout.vue";
+
+export default {
+    components: {
+        MainLayout,
+    },
+    created() {
+        let userInfo = JSON.parse(localStorage.getItem("tokenAuth"));
+        if (!userInfo) {
+            this.$router.push("/login");
+        }
+    },
+};
 </script>
