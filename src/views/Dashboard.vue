@@ -1035,15 +1035,22 @@ section {
 </style>
 <script>
 import MainLayout from "../layouts/MainLayout.vue";
-
+import { apiGet } from "../api/api";
 export default {
     components: {
         MainLayout,
     },
-    created() {
+    async created() {
         let userInfo = JSON.parse(localStorage.getItem("tokenAuth"));
         if (!userInfo) {
             this.$router.push("/login");
+        } else {
+            try {
+                let userObj = await apiGet("/auth");
+                localStorage.setItem("userInfo", JSON.stringify(userObj));
+            } catch (error) {
+                console.log(error);
+            }
         }
     },
 };

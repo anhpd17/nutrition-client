@@ -129,9 +129,7 @@ const handleEdit = (index, row) => {
     detailDisease.value = row;
     visibleDetail.value = true;
 };
-const handleDelete = (index, row) => {
-    console.log(index, row);
-};
+const handleDelete = (index, row) => {};
 
 const saveDisease = async () => {
     try {

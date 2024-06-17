@@ -5,7 +5,8 @@ const axiosInstance = axios.create({
     headers: {
         common: {
             Authorization: `Bearer ${
-                JSON.parse(localStorage.getItem("tokenAuth"))?.token
+                JSON.parse(localStorage.getItem("tokenAuth"))?.token ||
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjgsInVzZXJuYW1lIjoiYW5ocGQxNyIsInBhc3N3b3JkIjoiJDJiJDEwJC5nLjdYU3JicEdnMGJGU25lVHNCdC5HcmZ6YWIudDc5NHJSRXRvcFhEYWV4eklsVW44b0lLIiwiaWF0IjoxNzE4NTQxMjk5LCJleHAiOjE3MTg4MDA0OTl9.E7E1aniaMr_Ja_YBBwGCq0GBZ8xs56JkT0FhnbYvYRc"
             }`,
         },
     },

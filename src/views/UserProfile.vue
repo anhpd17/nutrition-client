@@ -14,12 +14,15 @@
                     class="avatar"
                     :style="{
                         'background-color':
-                            avatarGenerate.generateColorByString('Duc Anh'),
+                            avatarGenerate.generateColorByString(userInfoName),
                     }"
                 >
-                    {{ avatarGenerate.getFirstLetterOfName("Duc Anh") }}
+                    {{ avatarGenerate.getFirstLetterOfName(userInfoName) }}
                 </div>
-                <h1 style="font-size: 30px">Duc Anh Pham</h1>
+                <div>
+                    <h1 style="font-size: 30px">{{ userInfoName }}</h1>
+                    <el-button @click="logout">Logout</el-button>
+                </div>
             </div>
             <div class="user-goal">
                 <el-form
@@ -128,6 +131,7 @@ export default {
     },
     data() {
         return {
+            userInfoName: JSON.parse(localStorage.getItem("userInfo"))?.name,
             avatarGenerate: avatarGenerate,
             userGoal: {
                 userId: 0,
@@ -144,6 +148,13 @@ export default {
                 nutrients: [],
             },
         };
+    },
+    methods: {
+        logout() {
+            localStorage.removeItem("tokenAuth");
+            localStorage.removeItem("userInfo");
+            this.$router.push("/login");
+        },
     },
 };
 </script>

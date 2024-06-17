@@ -27,10 +27,10 @@
                     class="avatar"
                     :style="{
                         'background-color':
-                            avatarGenerate.generateColorByString('Duc Anh'),
+                            avatarGenerate.generateColorByString(userInfoName),
                     }"
                 >
-                    {{ avatarGenerate.getFirstLetterOfName("Duc Anh") }}
+                    {{ avatarGenerate.getFirstLetterOfName(userInfoName) }}
                 </div>
             </router-link>
             <!-- <router-link to="/signup">
@@ -61,6 +61,7 @@
 </template>
 <script setup>
 import avatarGenerate from "../utils/avatarGenerator.js";
+const userInfoName = JSON.parse(localStorage.getItem("userInfo"))?.name;
 </script>
 <style scoped>
 /* header */

@@ -31,7 +31,7 @@
                             label="Description"
                             prop="Description"
                         />
-                        <el-table-column label="Date" prop="dateMeal" />
+                        <!-- <el-table-column label="Date" prop="dateMeal" /> -->
                         <el-table-column align="right" width="350">
                             <template #header>
                                 <el-input
@@ -147,8 +147,7 @@ const detailNutrient = ref(null);
 
 onMounted(async () => {
     isLoadingTable.value = true;
-    let res = await apiGet("/meals/findAll");
-    tableData.value = res;
+    tableData.value = await apiGet("/meals/findAll");
     isLoadingTable.value = false;
 });
 
@@ -165,12 +164,11 @@ const handleRecipe = (index, row) => {
     visibleRecipe.value = true;
 };
 const handleNutrient = (index, row) => {
-    console.log(index, row);
     detailNutrient.value = row.nutrients;
     visibleNutrient.value = true;
 };
 const handleDelete = async (index, row) => {
-    console.log(index, row);
+    isLoadingTable.value = true;
     try {
         await apiDeleteMany("/meals/delete", {
             id: [row.id.toString()],
@@ -182,6 +180,7 @@ const handleDelete = async (index, row) => {
             type: "success",
             position: "bottom-right",
         });
+        tableData.value = await apiGet("/meals/findAll");
     } catch (error) {
         console.log(error);
         ElNotification({
@@ -192,6 +191,7 @@ const handleDelete = async (index, row) => {
             position: "bottom-right",
         });
     }
+    isLoadingTable.value = false;
 };
 </script>
 <style>
