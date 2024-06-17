@@ -29,7 +29,7 @@
                             display: flex;
                             align-items: center;
                             flex-wrap: nowrap;
-                            overflow-x: hidden;
+                            overflow-x: auto;
                         "
                     >
                         <el-button
@@ -178,11 +178,11 @@
                     autocomplete="off"
                 />
             </el-form-item>
-            <el-form-item label="Ingredients">
+            <el-form-item label="Dish">
                 <el-select
                     v-model="newDish.Id"
                     collapse-tags
-                    placeholder="Select ingredients"
+                    placeholder="Select Dish"
                 >
                     <el-option
                         v-for="item in lstDishes"
@@ -361,13 +361,14 @@ const addDishToMeal = async () => {
 onMounted(async () => {
     isLoadingTable.value = true;
     tableData.value = await apiGet("/meals/findAll");
-    console.log(tableData.value);
     isLoadingTable.value = false;
     lstDishes.value = await apiGet("/dishes/findAll");
 });
 
 const lstDateMeal = computed(() => {
-    const lstDate = tableData.value.map((data) => data.dateMeal);
+    const lstDate = tableData.value
+        .map((data) => data.dateMeal)
+        .sort((a, b) => new Date(a) - new Date(b));
     return [...new Set(lstDate)];
 });
 
@@ -375,11 +376,11 @@ const filterTableData = computed(() =>
     tableData.value.filter((data) => {
         if (selectedDate.value != 0 && search.value) {
             return (
-                data.dateMeal === selectedDate.value &&
+                isSameDate(data.dateMeal, selectedDate.value) &&
                 data.name?.toLowerCase().includes(search.value.toLowerCase())
             );
         } else if (selectedDate.value) {
-            return data.dateMeal === selectedDate.value;
+            return isSameDate(data.dateMeal, selectedDate.value);
         } else if (selectedDate.value == null) {
             return data.dateMeal === null;
         } else {
@@ -389,6 +390,17 @@ const filterTableData = computed(() =>
         }
     })
 );
+
+const isSameDate = (date1, date2) => {
+    let d1 = new Date(date1);
+    let d2 = new Date(date2);
+    return (
+        d1.getFullYear() === d2.getFullYear() &&
+        d1.getMonth() === d2.getMonth() &&
+        d1.getDate() === d2.getDate()
+    );
+};
+
 const handleNutrient = (index, row) => {
     detailNutrient.value = row.nutrients;
     visibleNutrient.value = true;

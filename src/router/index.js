@@ -8,6 +8,7 @@ import Disease from "../views/Disease.vue";
 import Dish from "../views/Dish.vue";
 import Meal from "../views/Meal.vue";
 import UserProfile from "../views/UserProfile.vue";
+import User from "../views/User.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -53,16 +54,15 @@ const router = createRouter({
             name: "Signup",
         },
         {
+            path: "/users",
+            component: User,
+            name: "User",
+        },
+        {
             path: "/profile",
             component: UserProfile,
             name: "UserProfile",
         },
-        // {
-        //     path: "/leave/detail",
-        //     component: LeaveDetails,
-        //     name: "leave-detail",
-        //     props: true,
-        // },
     ],
 });
 

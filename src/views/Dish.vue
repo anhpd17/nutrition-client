@@ -34,10 +34,6 @@
                             label="Description"
                             prop="Description"
                         />
-                        <el-table-column label="Calories" prop="calorie" />
-                        <el-table-column label="Carbs" prop="carbs" />
-                        <el-table-column label="Fat" prop="fat" />
-                        <el-table-column label="Protein" prop="protein" />
                         <el-table-column align="right" width="260">
                             <template #header>
                                 <el-input
@@ -81,20 +77,42 @@
                 <el-input v-model="newDish.Description" autocomplete="off" />
             </el-form-item>
             <el-form-item label="Ingredients">
-                <el-select
-                    v-model="newDish.ingredients"
-                    multiple
-                    collapse-tags
-                    placeholder="Select ingredients"
+                <div
+                    style="
+                        display: flex;
+                        align-items: center;
+                        width: 100%;
+                        column-gap: 12px;
+                        margin-bottom: 12px;
+                    "
+                    v-for="(item1, index1) in newDish.ingredients"
+                    :key="index1"
                 >
-                    <el-option
-                        v-for="item in lstIngredients"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id"
+                    <el-select
+                        v-model="item1.ingredientId"
+                        collapse-tags
+                        placeholder="Select ingredients"
                     >
-                    </el-option>
-                </el-select>
+                        <el-option
+                            v-for="item in lstIngredients"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.id"
+                        >
+                        </el-option>
+                    </el-select>
+                    <el-input
+                        v-model.number="item1.quantity"
+                        autocomplete="off"
+                    />
+                </div>
+                <el-button
+                    size="small"
+                    style="padding: 20px 24px; margin-top: 12px"
+                    @click="addMoreIngre"
+                >
+                    Add more
+                </el-button>
             </el-form-item>
         </el-form>
         <template #footer>
@@ -113,19 +131,42 @@
                 <el-input v-model="detailDish.Description" autocomplete="off" />
             </el-form-item>
             <el-form-item label="Ingredients">
-                <el-select
-                    v-model="detailDishNutrients"
-                    multiple
-                    placeholder="Select ingredients"
+                <div
+                    style="
+                        display: flex;
+                        align-items: center;
+                        width: 100%;
+                        column-gap: 12px;
+                        margin-bottom: 12px;
+                    "
+                    v-for="(item1, index1) in detailDish.dishIngredients"
+                    :key="index1"
                 >
-                    <el-option
-                        v-for="item in lstIngredients"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id"
+                    <el-select
+                        v-model="item1.IngredientID"
+                        collapse-tags
+                        placeholder="Select ingredients"
                     >
-                    </el-option>
-                </el-select>
+                        <el-option
+                            v-for="item in lstIngredients"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.id"
+                        >
+                        </el-option>
+                    </el-select>
+                    <el-input
+                        v-model.number="item1.Quantity"
+                        autocomplete="off"
+                    />
+                </div>
+                <el-button
+                    size="small"
+                    style="padding: 20px 24px; margin-top: 12px"
+                    @click="addMoreIngreDetail"
+                >
+                    Add more
+                </el-button>
             </el-form-item>
         </el-form>
         <template #footer>
@@ -148,14 +189,32 @@ const detailVisible = ref(false);
 const lstIngredients = ref([]);
 const isLoadingTable = ref(false);
 const detailDish = ref(null);
-const detailDishNutrients = ref([]);
 const newDish = ref({
     name: "",
     isAll: false,
     Description: "",
     userId: JSON.parse(localStorage.getItem("userInfo")).id,
-    ingredients: [],
+    ingredients: [
+        {
+            ingredientId: 1,
+            quantity: 1,
+        },
+    ],
 });
+
+const addMoreIngreDetail = () => {
+    detailDish.value.dishIngredients.push({
+        IngredientID: 1,
+        Quantity: 1,
+    });
+};
+
+const addMoreIngre = () => {
+    newDish.value.ingredients.push({
+        ingredientId: 1,
+        quantity: 1,
+    });
+};
 
 const resetFormNew = () => {
     newDish.value = {
@@ -169,17 +228,9 @@ const resetFormNew = () => {
 
 const addnewDish = async () => {
     isLoadingTable.value = true;
-    const newDishObj = {
-        ...newDish.value,
-        ingredients: newDish.value.ingredients?.map((item) => {
-            return {
-                ingredientId: item,
-                quantity: 1,
-            };
-        }),
-    };
+    console.log(newDish.value);
     try {
-        await apiPost("/dishes/create", newDishObj);
+        await apiPost("/dishes/create", newDish.value);
         ElNotification({
             title: "Notice",
             message: "Create Successfully",
@@ -204,15 +255,16 @@ const addnewDish = async () => {
 };
 const updateDish = async () => {
     isLoadingTable.value = true;
+    console.log(detailDish.value);
     const objectCopy2 = {
         name: detailDish.value.name,
         isAll: detailDish.value.isAll,
         Description: detailDish.value.Description,
         userId: detailDish.value.userID,
-        ingredients: detailDishNutrients.value.map((item) => {
+        ingredients: detailDish.value.dishIngredients.map((item) => {
             return {
-                ingredientId: item,
-                quantity: 1,
+                ingredientId: item.IngredientID,
+                quantity: Number.parseInt(item.Quantity),
             };
         }),
     };
@@ -248,10 +300,7 @@ const filterTableData = computed(() =>
 );
 const handleEdit = (index, row) => {
     detailDish.value = row;
-    detailDishNutrients.value = row.dishIngredients.map(
-        (item) => item.IngredientID
-    );
-    console.log(detailDishNutrients.value);
+    console.log(row);
     detailVisible.value = true;
 };
 const handleDelete = async (index, row) => {

@@ -22,6 +22,7 @@
             <router-link to="/dish">
                 <div>Dish</div>
             </router-link>
+            <div @click="toUser">Users</div>
             <router-link to="/profile">
                 <div
                     class="avatar"
@@ -38,7 +39,25 @@
 </template>
 <script setup>
 import avatarGenerate from "../utils/avatarGenerator.js";
-const userInfoName = JSON.parse(localStorage.getItem("userInfo"))?.name;
+import router from "../router/index.js";
+
+const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+const isAdmin = userInfo.roleId == 1;
+const userInfoName = userInfo?.name;
+
+const toUser = () => {
+    if (isAdmin) {
+        router.push("/users");
+    } else {
+        ElNotification({
+            title: "Notice",
+            message: "You are not allowed to view this",
+            duration: 3000,
+            type: "error",
+            position: "bottom-right",
+        });
+    }
+};
 </script>
 <style scoped>
 /* header */

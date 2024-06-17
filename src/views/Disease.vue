@@ -15,12 +15,6 @@
                     <h1 style="text-transform: uppercase; font-size: 32px">
                         Disease
                     </h1>
-                    <el-button
-                        type="success"
-                        style="padding: 24px"
-                        :disabled="true"
-                        >Add New</el-button
-                    >
                 </div>
                 <div class="content-page" style="padding: 24px 124px">
                     <el-table
@@ -50,19 +44,9 @@
                                     size="small"
                                     @click="handleEdit(scope.$index, scope.row)"
                                     style="padding: 20px 24px"
+                                    :disabled="!isAdmin"
                                 >
                                     Edit
-                                </el-button>
-                                <el-button
-                                    size="small"
-                                    type="danger"
-                                    :disabled="true"
-                                    @click="
-                                        handleDelete(scope.$index, scope.row)
-                                    "
-                                    style="padding: 20px 24px"
-                                >
-                                    Delete
                                 </el-button>
                             </template>
                         </el-table-column>
@@ -89,6 +73,9 @@
                     autocomplete="off"
                 />
             </el-form-item>
+            <el-form-item label="Instant delivery">
+                <el-switch v-model="detailDisease.isActive" />
+            </el-form-item>
         </el-form>
         <template #footer>
             <div class="dialog-footer">
@@ -104,13 +91,14 @@
 import MainLayout from "../layouts/MainLayout.vue";
 import { computed, ref, onMounted } from "vue";
 import { apiGet, apiPatch } from "../api/api";
-import { ElNotification } from "element-plus";
+import { isAdminRole } from "../utils/permission";
 
 const isLoadingTable = ref(false);
 const tableData = ref([]);
 const search = ref("");
 const detailDisease = ref(null);
 const visibleDetail = ref(false);
+const isAdmin = isAdminRole();
 
 onMounted(async () => {
     isLoadingTable.value = true;
@@ -129,7 +117,6 @@ const handleEdit = (index, row) => {
     detailDisease.value = row;
     visibleDetail.value = true;
 };
-const handleDelete = (index, row) => {};
 
 const saveDisease = async () => {
     try {
