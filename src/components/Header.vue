@@ -13,9 +13,9 @@
             <router-link to="/ingredient">
                 <div>Ingredients</div>
             </router-link>
-            <router-link to="/assessment">
+            <!-- <router-link to="/assessment">
                 <div>Assessment</div>
-            </router-link>
+            </router-link> -->
             <router-link to="/disease">
                 <div>Disease</div>
             </router-link>
@@ -33,29 +33,6 @@
                     {{ avatarGenerate.getFirstLetterOfName(userInfoName) }}
                 </div>
             </router-link>
-            <!-- <router-link to="/signup">
-                <div
-                    style="
-                        border: 1px solid var(--main-color);
-                        padding: 10px 22px;
-                        border-radius: 8px;
-                    "
-                >
-                    Sign up
-                </div>
-            </router-link>
-            <router-link to="/login">
-                <div
-                    style="
-                        background-color: var(--main-color);
-                        padding: 12px 24px;
-                        color: white;
-                        border-radius: 8px;
-                    "
-                >
-                    Log in
-                </div>
-            </router-link> -->
         </nav>
     </header>
 </template>
