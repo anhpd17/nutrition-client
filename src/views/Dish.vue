@@ -97,11 +97,6 @@
                         remote-show-suffix
                         placeholder="Select ingredients"
                         :remote-method="remoteMethod"
-                        @change="
-                            (event) => {
-                                console.log(event);
-                            }
-                        "
                     >
                         <el-option
                             v-for="item in lstIngredients"
@@ -156,6 +151,11 @@
                         v-model="item1.IngredientID"
                         collapse-tags
                         placeholder="Select ingredients"
+                        filterable
+                        remote
+                        reserve-keyword
+                        remote-show-suffix
+                        :remote-method="remoteMethod"
                     >
                         <el-option
                             v-for="item in lstIngredients"
