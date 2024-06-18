@@ -130,7 +130,11 @@
                             label="Description"
                             prop="Description"
                         />
-                        <el-table-column label="Date" prop="dateMeal" />
+                        <el-table-column label="Date" prop="dateMeal">
+                            <template #default="scope">
+                                {{ formatDate(scope.row.dateMeal) }}
+                            </template>
+                        </el-table-column>
                         <el-table-column align="right" width="350">
                             <template #header>
                                 <el-input
@@ -350,7 +354,14 @@ const newMeal = ref({
     name: "",
     Description: "",
     dishesRecipe: [],
-    dateMeal: new Date(),
+    dateMeal: new Date(
+        new Date().getFullYear(),
+        new Date().getMonth(),
+        new Date().getDate(),
+        0,
+        0,
+        0
+    ),
 });
 
 const convertList = (obj) => {

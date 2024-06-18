@@ -12,7 +12,7 @@
                 </router-link>
             </div>
             <div class="info-block">
-                <h1 class="form-title">Sign up</h1>
+                <h1 class="form-title">Log in</h1>
                 <div class="input-group">
                     <label for="username-input">Username</label>
                     <input ref="username" type="text" id="username-input" />

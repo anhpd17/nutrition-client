@@ -19,6 +19,7 @@
                         type="success"
                         style="padding: 24px"
                         @click="() => (addNewVisible = true)"
+                        :disabled="!isAdmin"
                         >Add New</el-button
                     >
                 </div>
@@ -90,20 +91,48 @@
                 <el-input v-model="newIngre.originalName" autocomplete="off" />
             </el-form-item>
             <el-form-item label="Nutritions">
-                <el-select
-                    v-model="newIngre.nutrition"
-                    collapse-tags
-                    multiple
-                    placeholder="Select Nutritions"
+                <div
+                    style="
+                        display: flex;
+                        align-items: center;
+                        width: 100%;
+                        column-gap: 12px;
+                        margin-bottom: 12px;
+                    "
+                    v-for="(item1, index1) in newIngre.nutrition"
+                    :key="index1"
                 >
-                    <el-option
-                        v-for="(item, index) in lstNutritions"
-                        :key="index"
-                        :label="item"
-                        :value="item"
+                    <el-select
+                        v-model="item1.name"
+                        collapse-tags
+                        placeholder="Select nutrition"
+                        filterable
                     >
-                    </el-option>
-                </el-select>
+                        <el-option
+                            v-for="(item, index) in lstNutritions"
+                            :key="index"
+                            :label="item"
+                            :value="item"
+                        >
+                        </el-option>
+                    </el-select>
+                    <el-input
+                        v-model.number="item1.amount"
+                        autocomplete="off"
+                    />
+                    <el-input
+                        v-model.number="item1.unit"
+                        autocomplete="off"
+                        placeholder="Mg"
+                    />
+                </div>
+                <el-button
+                    size="small"
+                    style="padding: 20px 24px; margin-top: 12px"
+                    @click="addMoreIngreDetail"
+                >
+                    Add more
+                </el-button>
             </el-form-item>
             <el-form-item
                 label="Weight Per Serving"
@@ -132,12 +161,102 @@
             </div>
         </template>
     </el-dialog>
+    <el-dialog v-model="detailVisible" title="Edit Ingredient" width="600">
+        <el-form :model="detailIngre" :label-width="150" label-position="left">
+            <el-form-item label="Name">
+                <el-input v-model="detailIngre.name" autocomplete="off" />
+            </el-form-item>
+            <el-form-item label="Code">
+                <el-input v-model="detailIngre.code" autocomplete="off" />
+            </el-form-item>
+            <el-form-item label="Original">
+                <el-input v-model="detailIngre.original" autocomplete="off" />
+            </el-form-item>
+            <el-form-item label="Original name">
+                <el-input
+                    v-model="detailIngre.originalName"
+                    autocomplete="off"
+                />
+            </el-form-item>
+            <el-form-item label="Nutritions">
+                <div
+                    style="
+                        display: flex;
+                        align-items: center;
+                        width: 100%;
+                        column-gap: 12px;
+                        margin-bottom: 12px;
+                    "
+                    v-for="(item1, index1) in detailIngre.nutrients"
+                    :key="index1"
+                >
+                    <el-select
+                        v-model="item1.name"
+                        collapse-tags
+                        placeholder="Select nutrition"
+                        filterable
+                    >
+                        <el-option
+                            v-for="(item, index) in lstNutritions"
+                            :key="index"
+                            :label="item"
+                            :value="item"
+                        >
+                        </el-option>
+                    </el-select>
+                    <el-input
+                        v-model.number="item1.amount"
+                        autocomplete="off"
+                    />
+                    <el-input
+                        v-model.number="item1.unit"
+                        autocomplete="off"
+                        placeholder="Mg"
+                    />
+                </div>
+                <el-button
+                    size="small"
+                    style="padding: 20px 24px; margin-top: 12px"
+                    @click="addMoreSaveIngreDetail"
+                >
+                    Add more
+                </el-button>
+            </el-form-item>
+            <el-form-item
+                label="Weight Per Serving"
+                style="display: flex; align-items: center; column-gap: 12px"
+            >
+                <div
+                    style="display: flex; align-items: center; column-gap: 12px"
+                >
+                    <el-input
+                        v-model.number="detailIngre.weightPerServing.amount"
+                        autocomplete="off"
+                        placeholder="100"
+                    />
+                    <el-input
+                        v-model="detailIngre.weightPerServing.unit"
+                        autocomplete="off"
+                        placeholder="mg"
+                    />
+                </div>
+            </el-form-item>
+        </el-form>
+        <template #footer>
+            <div class="dialog-footer">
+                <el-button @click="detailVisible = false">Cancel</el-button>
+                <el-button type="success" @click="saveIngre">Save</el-button>
+            </div>
+        </template>
+    </el-dialog>
 </template>
 <script setup>
-import { apiGet, apiDeleteMany, apiPost } from "../api/api";
+import { apiGet, apiDeleteMany, apiPost, apiPatch } from "../api/api";
 import { computed, ref, onMounted } from "vue";
+import { isAdminRole } from "../utils/permission";
 import MainLayout from "../layouts/MainLayout.vue";
 
+const isAdmin = isAdminRole();
 const addNewVisible = ref(false);
 const search = ref("");
 const tableData = ref([]);
@@ -156,7 +275,23 @@ const newIngre = ref({
         unit: "",
     },
 });
+const detailIngre = ref(null);
+const detailVisible = ref(false);
 
+const addMoreIngreDetail = () => {
+    newIngre.value.nutrition.push({
+        name: "",
+        amount: 0,
+        unit: "",
+    });
+};
+const addMoreSaveIngreDetail = () => {
+    detailIngre.value.nutrition.push({
+        name: "",
+        amount: 0,
+        unit: "",
+    });
+};
 const getNextPage = async () => {
     isLoadingTable.value = true;
     let res = await apiGet(
@@ -165,15 +300,6 @@ const getNextPage = async () => {
     currentPage.value = currentPage.value + 1;
     tableData.value = res;
     isLoadingTable.value = false;
-};
-const resetFormNew = () => {
-    newDish.value = {
-        name: "",
-        calorie: 0,
-        protein: 0,
-        carbs: 0,
-        fat: 0,
-    };
 };
 
 onMounted(async () => {
@@ -186,18 +312,8 @@ onMounted(async () => {
 
 const addnewIngre = async () => {
     isLoadingTable.value = true;
-    let newIgreObj = {
-        ...newIngre.value,
-        nutrition: newIngre.value.nutrition.map((item) => {
-            return {
-                name: item,
-                amount: 1,
-                unit: "g",
-            };
-        }),
-    };
     try {
-        await apiPost("/dishes/create", newIgreObj);
+        await apiPost("/ingredient/create", newIngre.value);
         ElNotification({
             title: "Notice",
             message: "Create Successfully",
@@ -205,8 +321,7 @@ const addnewIngre = async () => {
             type: "success",
             position: "bottom-right",
         });
-        tableData.value = await apiGet("/ingredient/findAll");
-        resetFormNew();
+        tableData.value = await apiGet("/ingredient/findAll?take=10&page=1");
     } catch (error) {
         console.log(error);
         ElNotification({
@@ -221,6 +336,41 @@ const addnewIngre = async () => {
     isLoadingTable.value = false;
 };
 
+const saveIngre = async () => {
+    isLoadingTable.value = true;
+    console.log(detailIngre.value);
+    try {
+        await apiPatch(`/ingredient/update/${detailIngre.value.id}`, {
+            name: detailIngre.value.name,
+            code: detailIngre.value.code,
+            image: detailIngre.value.image,
+            original: detailIngre.value.original,
+            originalName: detailIngre.value.originalName,
+            nutrition: detailIngre.value.nutrients,
+            weightPerServing: detailIngre.value.weightPerServing,
+        });
+        ElNotification({
+            title: "Notice",
+            message: "update Successfully",
+            duration: 3000,
+            type: "success",
+            position: "bottom-right",
+        });
+        tableData.value = await apiGet("/ingredient/findAll?take=10&page=1");
+    } catch (error) {
+        console.log(error);
+        ElNotification({
+            title: "Notice",
+            message: "update Failed",
+            duration: 3000,
+            type: "error",
+            position: "bottom-right",
+        });
+    }
+    detailVisible.value = false;
+    isLoadingTable.value = false;
+};
+
 const filterTableData = computed(() =>
     tableData.value.filter((data) => {
         return (
@@ -230,8 +380,8 @@ const filterTableData = computed(() =>
     })
 );
 const handleEdit = (index, row) => {
-    // detailIngre.value = row;
-    // detailVisible.value = true;
+    detailIngre.value = row;
+    detailVisible.value = true;
 };
 const handleDelete = async (index, row) => {
     isLoadingTable.value = true;
@@ -246,7 +396,7 @@ const handleDelete = async (index, row) => {
             type: "success",
             position: "bottom-right",
         });
-        tableData.value = await apiGet("/ingredient/findAll");
+        tableData.value = await apiGet("/ingredient/findAll?take=10&page=1");
     } catch (error) {
         console.log(error);
         ElNotification({

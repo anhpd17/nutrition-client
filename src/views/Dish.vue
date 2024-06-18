@@ -34,7 +34,7 @@
                             label="Description"
                             prop="Description"
                         />
-                        <el-table-column align="right" width="260">
+                        <el-table-column align="right" width="360">
                             <template #header>
                                 <el-input
                                     v-model="search"
@@ -44,6 +44,18 @@
                                 />
                             </template>
                             <template #default="scope">
+                                <el-button
+                                    size="small"
+                                    @click="
+                                        handleNutritions(
+                                            scope.$index,
+                                            scope.row
+                                        )
+                                    "
+                                    style="padding: 20px 24px"
+                                >
+                                    Nutritions
+                                </el-button>
                                 <el-button
                                     size="small"
                                     @click="handleEdit(scope.$index, scope.row)"
@@ -186,6 +198,31 @@
             </div>
         </template>
     </el-dialog>
+
+    <!-- FORM DETAIL NUTRIENT -->
+    <el-dialog v-model="visibleNutrient" title="Nutrient" width="900">
+        <el-table
+            v-loading="isLoadingTable"
+            :data="detailNutrient"
+            style="width: 100%"
+            height="460"
+        >
+            <el-table-column label="Name" prop="name" />
+            <el-table-column label="Amount" prop="amount" />
+            <el-table-column label="Unit" prop="unit" />
+            <el-table-column label="Daily Need" prop="percentOfDailyNeeds" />
+        </el-table>
+        <template #footer>
+            <div class="dialog-footer">
+                <el-button
+                    type="success"
+                    @click="() => (visibleNutrient = false)"
+                >
+                    Okay
+                </el-button>
+            </div>
+        </template>
+    </el-dialog>
 </template>
 <script setup>
 import MainLayout from "../layouts/MainLayout.vue";
@@ -198,7 +235,9 @@ const addNewVisible = ref(false);
 const detailVisible = ref(false);
 const lstIngredients = ref([]);
 const isLoadingTable = ref(false);
+const detailNutrient = ref(null);
 const detailDish = ref(null);
+const visibleNutrient = ref(false);
 const newDish = ref({
     name: "",
     isAll: false,
@@ -211,6 +250,11 @@ const newDish = ref({
         },
     ],
 });
+
+const handleNutritions = (index, row) => {
+    detailNutrient.value = row.nutrients;
+    visibleNutrient.value = true;
+};
 
 const remoteMethod = async (query) => {
     if (query) {

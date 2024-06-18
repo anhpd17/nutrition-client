@@ -131,19 +131,19 @@
 <script>
 import MainLayout from "../layouts/MainLayout.vue";
 import avatarGenerate from "../utils/avatarGenerator.js";
-import { apiGet } from "../api/api.js";
+import { apiGet, apiPatch } from "../api/api.js";
 
 export default {
     components: {
         MainLayout,
     },
     async created() {
-        this.userGoal = await apiGet("/userGoals/findOne/1");
+        this.userGoal = await apiGet(`/userGoals/findOne/${this.userGoalId}`);
         this.lstCondition = await apiGet("/conditions/findAll?isActive=true");
-        console.log(this.lstCondition);
     },
     data() {
         return {
+            userGoalId: JSON.parse(localStorage.getItem("userGoalId")) || 1,
             userInfoName: JSON.parse(localStorage.getItem("userInfo"))?.name,
             avatarGenerate: avatarGenerate,
             userGoal: {
@@ -163,7 +163,32 @@ export default {
         logout() {
             localStorage.removeItem("tokenAuth");
             localStorage.removeItem("userInfo");
+            localStorage.removeItem("userGoalId");
             this.$router.push("/login");
+        },
+        async submitForm() {
+            try {
+                await apiPatch(`/userGoals/update/${this.userGoalId}`, {
+                    userId: this.userGoal.userId,
+                    Description: this.userGoal.Description,
+                    sex: this.userGoal.sex,
+                    age: this.userGoal.age,
+                    height: this.userGoal.height,
+                    weight: this.userGoal.weight,
+                    exercise: this.userGoal.exercise,
+                    conditionIds: this.userGoal.conditionIds,
+                });
+                this.$message({
+                    type: "success",
+                    message: "Update success",
+                });
+            } catch (error) {
+                console.log(err);
+                this.$message({
+                    type: "error",
+                    message: "Update failed",
+                });
+            }
         },
     },
 };

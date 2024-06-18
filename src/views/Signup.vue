@@ -1,10 +1,7 @@
 <template>
     <div id="container">
         <div class="wrapper">
-            <div
-                v-if="!isSecondStep"
-                style="display: flex; align-items: center; column-gap: 46px"
-            >
+            <div style="display: flex; align-items: center; column-gap: 46px">
                 <div class="signup-left">
                     <h1>Sign up</h1>
                     <div class="signup-form">
@@ -74,16 +71,14 @@
                     </router-link>
                 </div>
             </div>
-            <UserInfoSignup v-else :userInfo="userInfo" />
         </div>
     </div>
 </template>
 <script setup>
-import { apiPost } from "../api/api";
-import UserInfoSignup from "./UserInfoSignup.vue";
+import { apiPost, apiGet } from "../api/api";
 import { ref } from "vue";
+import router from "../router";
 
-const isSecondStep = ref(false);
 const authInfo = ref({
     userName: "",
     password: "",
@@ -91,17 +86,26 @@ const authInfo = ref({
     email: "",
     roleId: null,
 });
-const userInfo = ref({
-    Name: "",
-    DateOfBirth: "",
-    gender: "",
-    Weight: "",
-    Height: "",
-    fullName: "",
-});
 const moveToSecondStep = async () => {
     try {
         let res = await apiPost("/auth/create", authInfo.value);
+        let userObj = await apiGet("/auth");
+        localStorage.setItem("userInfo", JSON.stringify(userObj));
+        // Create user goal for this user
+        let res2 = await apiPost(`/userGoals/create`, {
+            userId: userObj.id,
+            Description: "",
+            sex: true,
+            age: 18,
+            height: 170,
+            weight: 60,
+            exercise: "EXTRA_ACTIVE",
+            conditionIds: [],
+        });
+        console.log(res);
+        console.log(res2);
+        localStorage.setItem("userGoalId", JSON.stringify(res2.id));
+        router.push("/");
         ElNotification({
             title: "Notice",
             message: "Create account Successfully",
@@ -109,7 +113,7 @@ const moveToSecondStep = async () => {
             type: "success",
             position: "bottom-right",
         });
-        isSecondStep.value = true;
+        router.push("/");
     } catch (error) {
         console.log(error);
         ElNotification({
