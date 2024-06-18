@@ -15,12 +15,20 @@
                     <h1 style="text-transform: uppercase; font-size: 32px">
                         Meal
                     </h1>
-                    <el-button
-                        type="success"
-                        style="padding: 24px"
-                        @click="() => (addNewVisible = true)"
-                        >Add New</el-button
-                    >
+                    <div>
+                        <el-button
+                            type="success"
+                            style="padding: 24px"
+                            @click="() => (visibleOverview = true)"
+                            >Overview</el-button
+                        >
+                        <el-button
+                            type="success"
+                            style="padding: 24px"
+                            @click="() => (addNewVisible = true)"
+                            >Add New</el-button
+                        >
+                    </div>
                 </div>
                 <div class="content-page" style="padding: 24px 124px">
                     <div
@@ -268,9 +276,55 @@
             </div>
         </template>
     </el-dialog>
+
+    <!-- FORM OVERVIEW -->
+    <el-dialog v-model="visibleOverview" title="Overview" width="900">
+        <div
+            class="lst-date"
+            style="
+                display: flex;
+                align-items: center;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                margin-bottom: 24px;
+            "
+        >
+            <el-button
+                size="small"
+                style="padding: 16px 12px; margin-left: 6px"
+                v-for="(item, index) in lstDateMeal"
+                :key="index"
+                :class="[{ active: item == selectedDate }]"
+                @click="chooseOverview(item)"
+            >
+                {{ formatDate(item) }}
+            </el-button>
+        </div>
+        <el-table
+            v-loading="isLoadingTable"
+            :data="overviewData"
+            style="width: 100%"
+            height="460"
+        >
+            <el-table-column label="Name" prop="name" />
+            <el-table-column label="Amount" prop="amount" />
+            <el-table-column label="Unit" prop="unit" />
+            <el-table-column label="Daily Need" prop="percentOfDailyNeeds" />
+        </el-table>
+        <template #footer>
+            <div class="dialog-footer">
+                <el-button
+                    type="success"
+                    @click="() => (visibleOverview = false)"
+                >
+                    Okay
+                </el-button>
+            </div>
+        </template>
+    </el-dialog>
 </template>
 <script setup>
-import { apiGet, apiDeleteMany, apiPost } from "../api/api";
+import { apiGet, apiDeleteMany, apiPost, apiGetParam } from "../api/api";
 import { computed, ref, onMounted } from "vue";
 import MainLayout from "../layouts/MainLayout.vue";
 import { ElNotification } from "element-plus";
@@ -284,6 +338,8 @@ const visibleNutrient = ref(false);
 const addDishVisible = ref(false);
 const addNewVisible = ref(false);
 const detailNutrient = ref(null);
+const visibleOverview = ref(false);
+const overviewData = ref(null);
 const lstDishes = ref([]);
 const selectedDate = ref("");
 const newDish = ref({
@@ -297,6 +353,65 @@ const newMeal = ref({
     dateMeal: new Date(),
 });
 
+const convertList = (obj) => {
+    // Create an empty list to store the converted objects
+    const convertedList = [];
+
+    // Loop through each key-value pair in the original object
+    for (const key in obj) {
+        const nestedObj = obj[key];
+
+        // Create a new object with "name" and spread properties
+        const convertedObj = {
+            name: key,
+            ...nestedObj,
+        };
+
+        // Add the converted object to the list
+        convertedList.push(convertedObj);
+    }
+
+    return convertedList;
+};
+
+const chooseOverview = async (item) => {
+    selectedDate.value = item;
+    try {
+        let res = await apiGetParam("/meals/get-nutrition-day/27", {
+            day: convertDate(selectedDate.value),
+        });
+        console.log(res?.nutritionalInfo);
+        overviewData.value = convertList(res?.nutritionalInfo);
+        console.log(overviewData.value);
+        ElNotification({
+            title: "Notice",
+            message: "Get Data Successfully",
+            duration: 3000,
+            type: "success",
+            position: "bottom-right",
+        });
+    } catch (error) {
+        console.log(error);
+        ElNotification({
+            title: "Notice",
+            message: "Get data Failed",
+            duration: 3000,
+            type: "error",
+            position: "bottom-right",
+        });
+    }
+};
+const convertDate = (dateString) => {
+    const date = new Date(dateString);
+    const formattedDate = date.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        separator: "/",
+    });
+
+    return formattedDate;
+};
 const addnewMeal = async () => {
     isLoadingTable.value = true;
     console.log(newMeal.value);

@@ -37,14 +37,13 @@
                     "
                 >
                     <div style="width: 50%">
+                        <el-form-item label="Description">
+                            <el-input
+                                v-model.number="userGoal.Description"
+                            ></el-input>
+                        </el-form-item>
                         <el-form-item label="Age">
                             <el-input v-model.number="userGoal.age"></el-input>
-                        </el-form-item>
-                        <el-form-item label="BMR">
-                            <el-input v-model.number="userGoal.TEE"></el-input>
-                        </el-form-item>
-                        <el-form-item label="BMR">
-                            <el-input v-model.number="userGoal.TDEE"></el-input>
                         </el-form-item>
                         <el-form-item label="Sex">
                             <el-radio-group v-model="userGoal.sex">
@@ -78,11 +77,10 @@
                         </el-form-item>
                     </div>
                     <div style="width: 50%">
-                        <el-form-item label="BMR">
-                            <el-input v-model.number="userGoal.BMR"></el-input>
-                        </el-form-item>
-                        <el-form-item label="BMI">
-                            <el-input v-model.number="userGoal.BMI"></el-input>
+                        <el-form-item label="Height">
+                            <el-input
+                                v-model.number="userGoal.height"
+                            ></el-input>
                         </el-form-item>
                         <el-form-item label="Weight">
                             <el-input
@@ -90,22 +88,23 @@
                                 placeholder="Kg"
                             ></el-input>
                         </el-form-item>
-                        <el-form-item label="Pregnant">
-                            <el-radio-group
-                                v-model="userGoal.possiblePregnancy"
+                        <el-form-item label="Condition">
+                            <el-select
+                                v-model="userGoal.conditionIds"
+                                collapse-tags
+                                multiple
+                                placeholder="Select Conditions"
                             >
-                                <el-radio
-                                    label="Yes"
-                                    :value="true"
-                                    style="margin-right: 16px"
-                                ></el-radio>
-                                <el-radio
-                                    label="No"
-                                    :value="false"
-                                    style="margin-right: 16px"
-                                ></el-radio>
-                            </el-radio-group>
+                                <el-option
+                                    v-for="item in lstCondition"
+                                    :key="item.id"
+                                    :label="item.name"
+                                    :value="item.id"
+                                >
+                                </el-option>
+                            </el-select>
                         </el-form-item>
+
                         <el-form-item style="float: right; margin-right: 12px">
                             <el-button type="primary" @click="submitForm"
                                 >Save</el-button
@@ -128,25 +127,24 @@ export default {
     },
     async created() {
         this.userGoal = await apiGet("/userGoals/findOne/1");
+        this.lstCondition = await apiGet("/conditions/findAll");
+        console.log(this.lstCondition);
     },
     data() {
         return {
             userInfoName: JSON.parse(localStorage.getItem("userInfo"))?.name,
             avatarGenerate: avatarGenerate,
             userGoal: {
-                userId: 0,
-                BMR: 0,
+                userId: JSON.parse(localStorage.getItem("userInfo"))?.id,
                 sex: false,
                 age: 0,
                 weight: 0,
-                possiblePregnancy: null,
-                TEE: 0,
-                TDEE: 0,
+                height: 0,
                 exercise: "LITTLE_OR_NO_EXERCI",
-                BMI: 0,
                 Description: null,
-                nutrients: [],
+                conditionIds: [],
             },
+            lstCondition: [],
         };
     },
     methods: {
