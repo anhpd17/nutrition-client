@@ -134,7 +134,7 @@
     </el-dialog>
 </template>
 <script setup>
-import { apiGet, apiDeleteMany } from "../api/api";
+import { apiGet, apiDeleteMany, apiPost } from "../api/api";
 import { computed, ref, onMounted } from "vue";
 import MainLayout from "../layouts/MainLayout.vue";
 
