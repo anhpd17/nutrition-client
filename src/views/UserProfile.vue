@@ -67,11 +67,23 @@
                             >
                                 <el-option
                                     label="Ít vận động"
-                                    value="1"
+                                    value="LITTLE_OR_NO_EXERCISE"
+                                ></el-option>
+                                <el-option
+                                    label="Vận động nhẹ"
+                                    value="LIGHT_ACTIVITY"
+                                ></el-option>
+                                <el-option
+                                    label="Vận động trung bình"
+                                    value="MODERATE_ACTIVITY"
                                 ></el-option>
                                 <el-option
                                     label="Vận động nhiều"
-                                    value="2"
+                                    value="VERY_ACTIVE"
+                                ></el-option>
+                                <el-option
+                                    label="Vận động cường độ cao"
+                                    value="EXTRA_ACTIVE"
                                 ></el-option>
                             </el-select>
                         </el-form-item>
@@ -127,7 +139,7 @@ export default {
     },
     async created() {
         this.userGoal = await apiGet("/userGoals/findOne/1");
-        this.lstCondition = await apiGet("/conditions/findAll");
+        this.lstCondition = await apiGet("/conditions/findAll?isActive=true");
         console.log(this.lstCondition);
     },
     data() {
@@ -140,7 +152,7 @@ export default {
                 age: 0,
                 weight: 0,
                 height: 0,
-                exercise: "LITTLE_OR_NO_EXERCI",
+                exercise: "LITTLE_OR_NO_EXERCISE",
                 Description: null,
                 conditionIds: [],
             },

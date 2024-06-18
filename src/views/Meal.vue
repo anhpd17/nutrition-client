@@ -432,7 +432,11 @@ const addnewMeal = async () => {
             type: "success",
             position: "bottom-right",
         });
-        tableData.value = await apiGet("/meals/findAll");
+        tableData.value = await apiGet(
+            `/meals/findAll?userId=${
+                JSON.parse(localStorage.getItem("userInfo")).id
+            }`
+        );
         addNewVisible.value = false;
     } catch (error) {
         console.log(error);
@@ -460,7 +464,11 @@ const addDishToMeal = async () => {
             type: "success",
             position: "bottom-right",
         });
-        tableData.value = await apiGet("/meals/findAll");
+        tableData.value = await apiGet(
+            `/meals/findAll?userId=${
+                JSON.parse(localStorage.getItem("userInfo")).id
+            }`
+        );
         addDishVisible.value = false;
     } catch (error) {
         console.log(error);
@@ -475,7 +483,11 @@ const addDishToMeal = async () => {
 };
 onMounted(async () => {
     isLoadingTable.value = true;
-    tableData.value = await apiGet("/meals/findAll");
+    tableData.value = await apiGet(
+        `/meals/findAll?userId=${
+            JSON.parse(localStorage.getItem("userInfo")).id
+        }`
+    );
     isLoadingTable.value = false;
     lstDishes.value = await apiGet("/dishes/findAll");
 });
@@ -533,7 +545,11 @@ const handleDelete = async (index, row) => {
             type: "success",
             position: "bottom-right",
         });
-        tableData.value = await apiGet("/meals/findAll");
+        tableData.value = await apiGet(
+            `/meals/findAll?userId=${
+                JSON.parse(localStorage.getItem("userInfo")).id
+            }`
+        );
     } catch (error) {
         console.log(error);
         ElNotification({

@@ -91,7 +91,17 @@
                     <el-select
                         v-model="item1.ingredientId"
                         collapse-tags
+                        filterable
+                        remote
+                        reserve-keyword
+                        remote-show-suffix
                         placeholder="Select ingredients"
+                        :remote-method="remoteMethod"
+                        @change="
+                            (event) => {
+                                console.log(event);
+                            }
+                        "
                     >
                         <el-option
                             v-for="item in lstIngredients"
@@ -202,6 +212,13 @@ const newDish = ref({
     ],
 });
 
+const remoteMethod = async (query) => {
+    if (query) {
+        lstIngredients.value = await apiGet(
+            `/ingredient/findAll?name=${query}&take=10&page=1`
+        );
+    }
+};
 const addMoreIngreDetail = () => {
     detailDish.value.dishIngredients.push({
         IngredientID: 1,
@@ -338,7 +355,7 @@ onMounted(async () => {
         console.log(error);
     }
     isLoadingTable.value = false;
-    lstIngredients.value = await apiGet("/ingredient/findAll?take=50&page=1");
+    lstIngredients.value = await apiGet("/ingredient/findAll?take=10&page=1");
 });
 </script>
 <style>

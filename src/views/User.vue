@@ -15,12 +15,6 @@
                     <h1 style="text-transform: uppercase; font-size: 32px">
                         Users
                     </h1>
-                    <!-- <el-button
-                        type="success"
-                        style="padding: 24px"
-                        @click="() => (addNewVisible = true)"
-                        >Add New</el-button
-                    > -->
                 </div>
                 <div class="content-page" style="padding: 24px 124px">
                     <el-table
@@ -80,9 +74,6 @@
             <el-form-item label="Email">
                 <el-input v-model="detailUser.email" autocomplete="off" />
             </el-form-item>
-            <el-form-item label="Password">
-                <el-input v-model="detailUser.password" autocomplete="off" />
-            </el-form-item>
             <el-form-item label="Role">
                 <el-select
                     v-model="detailUser.roleId"
@@ -111,7 +102,6 @@ const tableData = ref([]);
 const isLoadingTable = ref(false);
 const detailVisible = ref(false);
 const detailUser = ref(null);
-const oldPassword = ref(null);
 
 onMounted(async () => {
     isLoadingTable.value = true;
@@ -155,7 +145,6 @@ const handleEdit = (index, row) => {
     console.log(row);
     detailUser.value = row;
     detailVisible.value = true;
-    oldPassword.value = row.password;
 };
 const updateUser = async () => {
     try {

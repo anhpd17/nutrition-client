@@ -30,6 +30,11 @@
                         height="460"
                     >
                         <el-table-column label="Name" prop="name" />
+                        <el-table-column label="Image" #default="scope">
+                            <img
+                                :src="`https://img.spoonacular.com/ingredients_100x100/${scope.row.image}`"
+                            />
+                        </el-table-column>
                         <el-table-column align="right" width="200">
                             <template #header>
                                 <el-input
@@ -61,6 +66,12 @@
                         </el-table-column>
                     </el-table>
                 </div>
+                <el-button
+                    type="success"
+                    @click="getNextPage"
+                    style="width: 100%; margin: 21px 0"
+                    >Next page</el-button
+                >
             </div>
         </template>
     </MainLayout>
@@ -69,23 +80,49 @@
             <el-form-item label="Name">
                 <el-input v-model="newIngre.name" autocomplete="off" />
             </el-form-item>
-            <el-form-item label="calorie">
-                <el-input
-                    v-model.number="newIngre.calorie"
-                    autocomplete="off"
-                />
+            <el-form-item label="Code">
+                <el-input v-model="newIngre.code" autocomplete="off" />
             </el-form-item>
-            <el-form-item label="protein">
-                <el-input
-                    v-model.number="newIngre.protein"
-                    autocomplete="off"
-                />
+            <el-form-item label="Original">
+                <el-input v-model="newIngre.original" autocomplete="off" />
             </el-form-item>
-            <el-form-item label="carbs">
-                <el-input v-model.number="newIngre.carbs" autocomplete="off" />
+            <el-form-item label="Original name">
+                <el-input v-model="newIngre.originalName" autocomplete="off" />
             </el-form-item>
-            <el-form-item label="fat">
-                <el-input v-model.number="newIngre.fat" autocomplete="off" />
+            <el-form-item label="Nutritions">
+                <el-select
+                    v-model="newIngre.nutrition"
+                    collapse-tags
+                    multiple
+                    placeholder="Select Nutritions"
+                >
+                    <el-option
+                        v-for="(item, index) in lstNutritions"
+                        :key="index"
+                        :label="item"
+                        :value="item"
+                    >
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item
+                label="Weight Per Serving"
+                style="display: flex; align-items: center; column-gap: 12px"
+            >
+                <div
+                    style="display: flex; align-items: center; column-gap: 12px"
+                >
+                    <el-input
+                        v-model.number="newIngre.weightPerServing.amount"
+                        autocomplete="off"
+                        placeholder="100"
+                    />
+                    <el-input
+                        v-model="newIngre.weightPerServing.unit"
+                        autocomplete="off"
+                        placeholder="mg"
+                    />
+                </div>
             </el-form-item>
         </el-form>
         <template #footer>
@@ -95,40 +132,6 @@
             </div>
         </template>
     </el-dialog>
-    <!-- <el-dialog v-model="detailVisible" title="Edit Ingredient" width="600">
-        <el-form :model="detailIngre" :label-width="150" label-position="left">
-            <el-form-item label="Name">
-                <el-input v-model="detailIngre.name" autocomplete="off" />
-            </el-form-item>
-            <el-form-item label="calorie">
-                <el-input
-                    v-model.number="detailIngre.calorie"
-                    autocomplete="off"
-                />
-            </el-form-item>
-            <el-form-item label="protein">
-                <el-input
-                    v-model.number="detailIngre.protein"
-                    autocomplete="off"
-                />
-            </el-form-item>
-            <el-form-item label="carbs">
-                <el-input
-                    v-model.number="detailIngre.carbs"
-                    autocomplete="off"
-                />
-            </el-form-item>
-            <el-form-item label="fat">
-                <el-input v-model.number="detailIngre.fat" autocomplete="off" />
-            </el-form-item>
-        </el-form>
-        <template #footer>
-            <div class="dialog-footer">
-                <el-button @click="detailVisible = false">Cancel</el-button>
-                <el-button type="success" @click="updateDish">Save</el-button>
-            </div>
-        </template>
-    </el-dialog> -->
 </template>
 <script setup>
 import { apiGet, apiDeleteMany } from "../api/api";
@@ -136,19 +139,33 @@ import { computed, ref, onMounted } from "vue";
 import MainLayout from "../layouts/MainLayout.vue";
 
 const addNewVisible = ref(false);
-const detailVisible = ref(false);
 const search = ref("");
 const tableData = ref([]);
+const currentPage = ref(1);
 const isLoadingTable = ref(false);
-const detailIngre = ref(null);
+const lstNutritions = ref([]);
 const newIngre = ref({
     name: "",
-    calorie: 0,
-    protein: 0,
-    carbs: 0,
-    fat: 0,
+    code: "",
+    image: "",
+    original: "",
+    originalName: "",
+    nutrition: [],
+    weightPerServing: {
+        amount: 0,
+        unit: "",
+    },
 });
 
+const getNextPage = async () => {
+    isLoadingTable.value = true;
+    let res = await apiGet(
+        `/ingredient/findAll?take=10&page=${currentPage.value + 1}`
+    );
+    currentPage.value = currentPage.value + 1;
+    tableData.value = res;
+    isLoadingTable.value = false;
+};
 const resetFormNew = () => {
     newDish.value = {
         name: "",
@@ -162,6 +179,7 @@ const resetFormNew = () => {
 onMounted(async () => {
     isLoadingTable.value = true;
     let res = await apiGet("/ingredient/findAll?take=10&page=1");
+    lstNutritions.value = await apiGet("/ingredient/getName");
     tableData.value = res;
     isLoadingTable.value = false;
 });
@@ -169,11 +187,14 @@ onMounted(async () => {
 const addnewIngre = async () => {
     isLoadingTable.value = true;
     let newIgreObj = {
-        name: newIngre.value.name,
-        calorie: newIngre.value.calorie,
-        protein: newIngre.value.protein,
-        carbs: newIngre.value.carbs,
-        fat: newIngre.value.fat,
+        ...newIngre.value,
+        nutrition: newIngre.value.nutrition.map((item) => {
+            return {
+                name: item,
+                amount: 1,
+                unit: "g",
+            };
+        }),
     };
     try {
         await apiPost("/dishes/create", newIgreObj);
