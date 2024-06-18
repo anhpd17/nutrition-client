@@ -121,6 +121,7 @@
                     <el-input
                         v-model.number="item1.quantity"
                         autocomplete="off"
+                        placeholder="Mg"
                     />
                 </div>
                 <el-button
@@ -245,8 +246,8 @@ const newDish = ref({
     userId: JSON.parse(localStorage.getItem("userInfo")).id,
     ingredients: [
         {
-            ingredientId: 1,
-            quantity: 1,
+            ingredientId: null,
+            quantity: null,
         },
     ],
 });
@@ -265,15 +266,15 @@ const remoteMethod = async (query) => {
 };
 const addMoreIngreDetail = () => {
     detailDish.value.dishIngredients.push({
-        IngredientID: 1,
-        Quantity: 1,
+        IngredientID: null,
+        Quantity: null,
     });
 };
 
 const addMoreIngre = () => {
     newDish.value.ingredients.push({
-        ingredientId: 1,
-        quantity: 1,
+        ingredientId: null,
+        quantity: null,
     });
 };
 
@@ -289,7 +290,6 @@ const resetFormNew = () => {
 
 const addnewDish = async () => {
     isLoadingTable.value = true;
-    console.log(newDish.value);
     try {
         await apiPost("/dishes/create", newDish.value);
         ElNotification({
@@ -316,7 +316,6 @@ const addnewDish = async () => {
 };
 const updateDish = async () => {
     isLoadingTable.value = true;
-    console.log(detailDish.value);
     const objectCopy2 = {
         name: detailDish.value.name,
         isAll: detailDish.value.isAll,
@@ -361,7 +360,6 @@ const filterTableData = computed(() =>
 );
 const handleEdit = (index, row) => {
     detailDish.value = row;
-    console.log(row);
     detailVisible.value = true;
 };
 const handleDelete = async (index, row) => {

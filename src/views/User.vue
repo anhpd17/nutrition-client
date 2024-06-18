@@ -142,7 +142,6 @@ const filterTableData = computed(() =>
     })
 );
 const handleEdit = (index, row) => {
-    console.log(row);
     detailUser.value = row;
     detailVisible.value = true;
 };

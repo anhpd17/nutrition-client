@@ -18,6 +18,17 @@
                         </div>
                         <div class="input-group">
                             <div class="input-group-icon">
+                                <i class="fa-solid fa-user"></i>
+                            </div>
+                            <input
+                                type="text"
+                                v-model="authInfo.email"
+                                placeholder="Your Email"
+                                id="name-input"
+                            />
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-icon">
                                 <i class="fa-solid fa-envelope"></i>
                             </div>
                             <input
@@ -32,10 +43,12 @@
                                 <i class="fa-solid fa-lock"></i>
                             </div>
                             <input
+                                minlength="6"
                                 type="password"
                                 v-model="authInfo.password"
                                 placeholder="Password"
                                 id="password-input"
+                                ref="passwordInput"
                             />
                         </div>
                         <div class="input-group">
@@ -43,17 +56,12 @@
                                 <i class="fa-solid fa-lock"></i>
                             </div>
                             <input
+                                minlength="6"
                                 type="password"
                                 placeholder="Repeat your password"
                                 id="confirm-password-input"
+                                ref="confirmPasswordInput"
                             />
-                        </div>
-                        <div class="accept-block">
-                            <input type="checkbox" name="" id="agree-term" />
-                            <span
-                                >I agree all statements in
-                                <a href="">Term of service</a></span
-                            >
                         </div>
                         <button class="signup-btn" @click="moveToSecondStep">
                             Register
@@ -79,6 +87,9 @@ import { apiPost, apiGet } from "../api/api";
 import { ref } from "vue";
 import router from "../router";
 
+const passwordInput = ref(null);
+const confirmPasswordInput = ref(null);
+
 const authInfo = ref({
     userName: "",
     password: "",
@@ -87,8 +98,29 @@ const authInfo = ref({
     roleId: null,
 });
 const moveToSecondStep = async () => {
+    console.log(passwordInput.value.value.length);
+    if (passwordInput.value.value.length < 6) {
+        ElNotification({
+            title: "Notice",
+            message: "Password has to be at least 6 characters",
+            duration: 3000,
+            type: "error",
+            position: "bottom-right",
+        });
+        return;
+    }
+    if (passwordInput.value.value != confirmPasswordInput.value.value) {
+        ElNotification({
+            title: "Notice",
+            message: "Confirm password is not match",
+            duration: 3000,
+            type: "error",
+            position: "bottom-right",
+        });
+        return;
+    }
     try {
-        let res = await apiPost("/auth/create", authInfo.value);
+        await apiPost("/auth/create", authInfo.value);
         let userObj = await apiGet("/auth");
         localStorage.setItem("userInfo", JSON.stringify(userObj));
         // Create user goal for this user
@@ -102,8 +134,6 @@ const moveToSecondStep = async () => {
             exercise: "EXTRA_ACTIVE",
             conditionIds: [],
         });
-        console.log(res);
-        console.log(res2);
         localStorage.setItem("userGoalId", JSON.stringify(res2.id));
         router.push("/");
         ElNotification({

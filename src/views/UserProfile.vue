@@ -118,6 +118,11 @@
                         </el-form-item>
 
                         <el-form-item style="float: right; margin-right: 12px">
+                            <el-button
+                                type="success"
+                                @click="() => (nutriView = true)"
+                                >Nutritions & Statistic</el-button
+                            >
                             <el-button type="primary" @click="submitForm"
                                 >Save</el-button
                             >
@@ -127,6 +132,74 @@
             </div>
         </template>
     </MainLayout>
+    <!-- ADD MEAL -->
+    <el-dialog v-model="nutriView" title="Statistic" width="600">
+        <el-form :model="userGoal" :label-width="150" label-position="left">
+            <el-form-item label="BMI">
+                <el-input
+                    v-model="userGoal.BMI"
+                    autocomplete="off"
+                    :readonly="true"
+                />
+            </el-form-item>
+            <el-form-item label="BMR">
+                <el-input
+                    v-model="userGoal.BMR"
+                    autocomplete="off"
+                    :readonly="true"
+                />
+            </el-form-item>
+            <el-form-item label="TDEE">
+                <el-input
+                    v-model="userGoal.TDEE"
+                    autocomplete="off"
+                    :readonly="true"
+                />
+            </el-form-item>
+            <el-form-item label="TEE">
+                <el-input
+                    v-model="userGoal.TEE"
+                    autocomplete="off"
+                    :readonly="true"
+                />
+            </el-form-item>
+            <h3>Nutritions</h3>
+            <div
+                style="
+                    display: flex;
+                    align-items: center;
+                    column-gap: 12px;
+                    margin-top: 8px;
+                "
+                v-for="(item, index) in userGoal.nutrients"
+                :key="index"
+            >
+                <el-input
+                    v-model="item.name"
+                    autocomplete="off"
+                    placeholder="Name"
+                    :readonly="true"
+                />
+                <el-input
+                    v-model="item.amount"
+                    autocomplete="off"
+                    placeholder="Amount"
+                    :readonly="true"
+                />
+                <el-input
+                    v-model="item.unit"
+                    autocomplete="off"
+                    placeholder="Unit"
+                    :readonly="true"
+                />
+            </div>
+        </el-form>
+        <template #footer>
+            <el-button type="success" @click="() => (nutriView = false)"
+                >Okay</el-button
+            >
+        </template>
+    </el-dialog>
 </template>
 <script>
 import MainLayout from "../layouts/MainLayout.vue";
@@ -143,6 +216,7 @@ export default {
     },
     data() {
         return {
+            nutriView: false,
             userGoalId: JSON.parse(localStorage.getItem("userGoalId")) || 1,
             userInfoName: JSON.parse(localStorage.getItem("userInfo"))?.name,
             avatarGenerate: avatarGenerate,
@@ -160,6 +234,7 @@ export default {
         };
     },
     methods: {
+        showNutri() {},
         logout() {
             localStorage.removeItem("tokenAuth");
             localStorage.removeItem("userInfo");
@@ -183,7 +258,7 @@ export default {
                     message: "Update success",
                 });
             } catch (error) {
-                console.log(err);
+                console.log(error);
                 this.$message({
                     type: "error",
                     message: "Update failed",

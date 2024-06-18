@@ -19,7 +19,7 @@
                         <el-button
                             type="success"
                             style="padding: 24px"
-                            @click="() => (visibleOverview = true)"
+                            @click="openOverview"
                             >Overview</el-button
                         >
                         <el-button
@@ -117,7 +117,6 @@
                                         () => {
                                             addDishVisible = true;
                                             itemDetailID = props.row.id;
-                                            console.log(itemDetailID);
                                         }
                                     "
                                 >
@@ -145,15 +144,6 @@
                                 />
                             </template>
                             <template #default="scope">
-                                <!-- <el-button
-                                    size="small"
-                                    @click="
-                                        handleRecipe(scope.$index, scope.row)
-                                    "
-                                    style="padding: 20px 24px"
-                                >
-                                    Recipe
-                                </el-button> -->
                                 <el-button
                                     size="small"
                                     @click="
@@ -311,9 +301,16 @@
             height="460"
         >
             <el-table-column label="Name" prop="name" />
-            <el-table-column label="Amount" prop="amount" />
+            <el-table-column label="Amount" prop="amount">
+                <template #default="scope">
+                    <span>{{ scope.row.amount }}</span
+                    >/<b>{{
+                        userNeed.find((x) => x?.name == scope.row?.name)
+                            ?.amount || 0
+                    }}</b>
+                </template>
+            </el-table-column>
             <el-table-column label="Unit" prop="unit" />
-            <el-table-column label="Daily Need" prop="percentOfDailyNeeds" />
         </el-table>
         <template #footer>
             <div class="dialog-footer">
@@ -328,7 +325,7 @@
     </el-dialog>
 </template>
 <script setup>
-import { apiGet, apiDeleteMany, apiPost, apiGetParam } from "../api/api";
+import { apiGet, apiDeleteMany, apiPost } from "../api/api";
 import { computed, ref, onMounted } from "vue";
 import MainLayout from "../layouts/MainLayout.vue";
 import { ElNotification } from "element-plus";
@@ -350,6 +347,7 @@ const newDish = ref({
     Id: 0,
     quantity: 1,
 });
+const userNeed = ref(null);
 const newMeal = ref({
     name: "",
     Description: "",
@@ -363,6 +361,20 @@ const newMeal = ref({
         0
     ),
 });
+
+const openOverview = async () => {
+    visibleOverview.value = true;
+    try {
+        let res = await apiGet(
+            `/userGoals/findOne/${
+                JSON.parse(localStorage.getItem("userGoalId")) || 22
+            }`
+        );
+        userNeed.value = res.nutrients;
+    } catch (error) {
+        console.log(error);
+    }
+};
 
 const convertList = (obj) => {
     // Create an empty list to store the converted objects
@@ -388,12 +400,15 @@ const convertList = (obj) => {
 const chooseOverview = async (item) => {
     selectedDate.value = item;
     try {
-        let res = await apiGetParam("/meals/get-nutrition-day/27", {
-            day: convertDate(selectedDate.value),
-        });
-        console.log(res?.nutritionalInfo);
+        let res = await apiPost(
+            `/meals/get-nutrition-day/${
+                JSON.parse(localStorage.getItem("userInfo")).id
+            }`,
+            {
+                day: convertDate(selectedDate.value),
+            }
+        );
         overviewData.value = convertList(res?.nutritionalInfo);
-        console.log(overviewData.value);
         ElNotification({
             title: "Notice",
             message: "Get Data Successfully",
@@ -425,7 +440,6 @@ const convertDate = (dateString) => {
 };
 const addnewMeal = async () => {
     isLoadingTable.value = true;
-    console.log(newMeal.value);
     try {
         await apiPost(`/meals/create`, {
             ...newMeal.value,
@@ -463,7 +477,6 @@ const addnewMeal = async () => {
 };
 
 const addDishToMeal = async () => {
-    console.log(newDish.value);
     try {
         await apiPost(`/meals/add-dish/${itemDetailID.value}`, {
             dishesRecipe: [newDish.value],

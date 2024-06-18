@@ -60,6 +60,7 @@
                                         handleDelete(scope.$index, scope.row)
                                     "
                                     style="padding: 20px 24px"
+                                    :disabled="!isAdmin"
                                 >
                                     Delete
                                 </el-button>
@@ -245,7 +246,12 @@
         <template #footer>
             <div class="dialog-footer">
                 <el-button @click="detailVisible = false">Cancel</el-button>
-                <el-button type="success" @click="saveIngre">Save</el-button>
+                <el-button
+                    type="success"
+                    @click="saveIngre"
+                    :disabled="!isAdmin"
+                    >Save</el-button
+                >
             </div>
         </template>
     </el-dialog>
@@ -338,7 +344,6 @@ const addnewIngre = async () => {
 
 const saveIngre = async () => {
     isLoadingTable.value = true;
-    console.log(detailIngre.value);
     try {
         await apiPatch(`/ingredient/update/${detailIngre.value.id}`, {
             name: detailIngre.value.name,
