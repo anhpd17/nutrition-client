@@ -120,22 +120,63 @@ const moveToSecondStep = async () => {
         return;
     }
     try {
-        await apiPost("/auth/create", authInfo.value);
-        let userObj = await apiGet("/auth");
-        localStorage.setItem("userInfo", JSON.stringify(userObj));
+        let token = await apiPost("/auth/create", authInfo.value);
+        localStorage.setItem(
+            "tokenAuth",
+            JSON.stringify({
+                token: token,
+            })
+        );
+
+        // Cần khởi tạo lại đối tượng axios instance để reset token
+
+        let userObj = null;
+        const headers1 = {
+            Authorization: `Bearer ${token}`,
+        };
+
+        await fetch("http://localhost:3001/auth", {
+            headers: headers1,
+        })
+            .then((response) => response.json()) // Parse the response as JSON
+            .then((data) => {
+                // Process the fetched data here
+                console.log(data);
+                userObj = data;
+                localStorage.setItem("userInfo", JSON.stringify(userObj));
+            })
+            .catch((error) => {
+                console.error("Error fetching data:", error);
+            });
         // Create user goal for this user
-        let res2 = await apiPost(`/userGoals/create`, {
-            userId: userObj.id,
-            Description: "",
-            sex: true,
-            age: 18,
-            height: 170,
-            weight: 60,
-            exercise: "EXTRA_ACTIVE",
-            conditionIds: [],
-        });
-        localStorage.setItem("userGoalId", JSON.stringify(res2.id));
-        router.push("/");
+        const headers2 = {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json", // Optional, depending on your API requirements
+        };
+
+        await fetch("http://localhost:3001/userGoals/create", {
+            method: "POST",
+            headers: headers2,
+            body: JSON.stringify({
+                userId: userObj.id,
+                Description: "",
+                sex: true,
+                age: 18,
+                height: 170,
+                weight: 60,
+                exercise: "EXTRA_ACTIVE",
+                conditionIds: [],
+            }), // Convert data to JSON string for POST request
+        })
+            .then((response) => response.json()) // Parse the response as JSON
+            .then((data) => {
+                // Process the fetched data here
+                console.log(data);
+                localStorage.setItem("userGoalId", JSON.stringify(data.id));
+            })
+            .catch((error) => {
+                console.error("Error fetching data:", error);
+            });
         ElNotification({
             title: "Notice",
             message: "Create account Successfully",
@@ -144,6 +185,9 @@ const moveToSecondStep = async () => {
             position: "bottom-right",
         });
         router.push("/");
+        setTimeout(() => {
+            location.reload();
+        }, 0);
     } catch (error) {
         console.log(error);
         ElNotification({

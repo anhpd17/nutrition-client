@@ -93,22 +93,6 @@
                                         label="Description"
                                         prop="dish.Description"
                                     />
-                                    <el-table-column
-                                        label="Calorie"
-                                        prop="dish.calorie"
-                                    />
-                                    <el-table-column
-                                        label="Carbs"
-                                        prop="dish.carbs"
-                                    />
-                                    <el-table-column
-                                        label="Fat"
-                                        prop="dish.fat"
-                                    />
-                                    <el-table-column
-                                        label="Protein"
-                                        prop="dish.protein"
-                                    />
                                 </el-table>
                                 <el-button
                                     type="success"

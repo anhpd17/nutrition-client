@@ -44,7 +44,6 @@ export default {
                     "tokenAuth",
                     JSON.stringify({
                         token: res,
-                        userName: this.$refs.username.value,
                     })
                 );
                 this.$notify({

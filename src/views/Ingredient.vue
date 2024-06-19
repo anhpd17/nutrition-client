@@ -26,7 +26,7 @@
                 <div class="content-page" style="padding: 24px 124px">
                     <el-table
                         v-loading="isLoadingTable"
-                        :data="filterTableData"
+                        :data="tableData"
                         style="width: 100%"
                         height="460"
                     >
@@ -258,7 +258,7 @@
 </template>
 <script setup>
 import { apiGet, apiDeleteMany, apiPost, apiPatch } from "../api/api";
-import { computed, ref, onMounted } from "vue";
+import { computed, ref, onMounted, watch } from "vue";
 import { isAdminRole } from "../utils/permission";
 import MainLayout from "../layouts/MainLayout.vue";
 
@@ -284,6 +284,13 @@ const newIngre = ref({
 const detailIngre = ref(null);
 const detailVisible = ref(false);
 
+watch(search, async (newQuestion, oldQuestion) => {
+    isLoadingTable.value = true;
+    tableData.value = await apiGet(
+        `/ingredient/findAll?name=${newQuestion}&take=10&page=1`
+    );
+    isLoadingTable.value = false;
+});
 const addMoreIngreDetail = () => {
     newIngre.value.nutrition.push({
         name: "",
@@ -376,14 +383,6 @@ const saveIngre = async () => {
     isLoadingTable.value = false;
 };
 
-const filterTableData = computed(() =>
-    tableData.value.filter((data) => {
-        return (
-            !search.value ||
-            data.name?.toLowerCase().includes(search.value.toLowerCase())
-        );
-    })
-);
 const handleEdit = (index, row) => {
     detailIngre.value = row;
     detailVisible.value = true;

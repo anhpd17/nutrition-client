@@ -211,7 +211,19 @@ export default {
         MainLayout,
     },
     async created() {
+        if (!JSON.parse(localStorage.getItem("userGoalId"))) {
+            let res = await apiGet(
+                `/userGoals/findOneByUser/${
+                    JSON.parse(localStorage.getItem("userInfo"))?.id
+                }`
+            );
+            this.userGoalId = res.id;
+            localStorage.setItem("userGoalId", JSON.stringify(res.id));
+        }
         this.userGoal = await apiGet(`/userGoals/findOne/${this.userGoalId}`);
+        this.userGoal.conditionIds = this.userGoal.userCondition.map(
+            (x) => x.conditionId
+        );
         this.lstCondition = await apiGet("/conditions/findAll?isActive=true");
     },
     data() {
