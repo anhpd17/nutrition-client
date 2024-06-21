@@ -66,23 +66,23 @@
                                 placeholder="Your exercise"
                             >
                                 <el-option
-                                    label="Ít vận động"
+                                    label="LITTLE OR NO EXERCISE"
                                     value="LITTLE_OR_NO_EXERCISE"
                                 ></el-option>
                                 <el-option
-                                    label="Vận động nhẹ"
+                                    label="LIGHT ACTIVITY"
                                     value="LIGHT_ACTIVITY"
                                 ></el-option>
                                 <el-option
-                                    label="Vận động trung bình"
+                                    label="MODERATE ACTIVITY"
                                     value="MODERATE_ACTIVITY"
                                 ></el-option>
                                 <el-option
-                                    label="Vận động nhiều"
+                                    label="VERY ACTIVE"
                                     value="VERY_ACTIVE"
                                 ></el-option>
                                 <el-option
-                                    label="Vận động cường độ cao"
+                                    label="EXTRA ACTIVE"
                                     value="EXTRA_ACTIVE"
                                 ></el-option>
                             </el-select>
@@ -119,6 +119,11 @@
 
                         <el-form-item style="float: right; margin-right: 12px">
                             <el-button
+                                type="primary"
+                                @click="() => (nutriChange = true)"
+                                >Change Nutritions</el-button
+                            >
+                            <el-button
                                 type="success"
                                 @click="() => (nutriView = true)"
                                 >Nutritions & Statistic</el-button
@@ -132,7 +137,73 @@
             </div>
         </template>
     </MainLayout>
-    <!-- ADD MEAL -->
+    <!-- Nutrition Change -->
+    <el-dialog v-model="nutriChange" title="Change Nutrition" width="600">
+        <el-form :model="userGoal" :label-width="150" label-position="left">
+            <el-form-item label="Fat">
+                <el-slider
+                    v-model="nutriChangeInfo.fatAmount"
+                    :min="rangeValueNutrient.fatAmount.min"
+                    :max="rangeValueNutrient.fatAmount.max"
+                    @change="handleChangeNutri('fat')"
+                />
+            </el-form-item>
+            <el-form-item label="Carbs">
+                <el-slider
+                    v-model="nutriChangeInfo.carbohydratesAmount"
+                    :min="rangeValueNutrient.carbohydratesAmount.min"
+                    :max="rangeValueNutrient.carbohydratesAmount.max"
+                    @change="handleChangeNutri('carbs')"
+                />
+            </el-form-item>
+            <el-form-item label="Protein">
+                <el-slider
+                    v-model="nutriChangeInfo.proteinAmount"
+                    :min="rangeValueNutrient.proteinAmount.min"
+                    :max="rangeValueNutrient.proteinAmount.max"
+                    @change="handleChangeNutri('protein')"
+                />
+            </el-form-item>
+        </el-form>
+        <div
+            style="
+                display: flex;
+                align-items: center;
+                column-gap: 36px;
+                margin-bottom: 24px;
+                justify-content: space-between;
+            "
+            v-for="(item, index) in Object.keys(nutriChangeInfo)"
+            :key="index"
+        >
+            <el-button>
+                {{
+                    (() => {
+                        switch (item) {
+                            case "proteinAmount":
+                                return "Protein amount";
+                            case "carbohydratesAmount":
+                                return "Carbohydrates amount";
+                            case "fatAmount":
+                                return "Fat amount";
+                            default:
+                                return "Unknown value";
+                        }
+                    })()
+                }}
+            </el-button>
+            <h3>
+                {{ nutriChangeInfo[item] }} grams/day (Range:
+                {{ rangeValueNutrient[item].min }} -
+                {{ rangeValueNutrient[item].max }})
+            </h3>
+        </div>
+        <template #footer>
+            <el-button @click="() => (nutriChange = false)">Cancel</el-button>
+            <el-button type="success" @click="saveChangeNutri">Save</el-button>
+        </template>
+    </el-dialog>
+    <!-- Nutrition View -->
     <el-dialog v-model="nutriView" title="Statistic" width="600">
         <el-form :model="userGoal" :label-width="150" label-position="left">
             <el-form-item label="BMI">
@@ -225,9 +296,17 @@ export default {
             (x) => x.conditionId
         );
         this.lstCondition = await apiGet("/conditions/findAll?isActive=true");
+        this.setDetailNutriInfo(this.userGoal.nutrients);
+        this.calculateRangeNutri(this.userGoal.TDEE);
     },
     data() {
         return {
+            nutriChange: false,
+            nutriChangeInfo: {
+                proteinAmount: 0,
+                carbohydratesAmount: 0,
+                fatAmount: 0,
+            },
             nutriView: false,
             userGoalId: JSON.parse(localStorage.getItem("userGoalId")) || 1,
             userInfoName: JSON.parse(localStorage.getItem("userInfo"))?.name,
@@ -243,10 +322,106 @@ export default {
                 conditionIds: [],
             },
             lstCondition: [],
+            rangeValueNutrient: {
+                fatAmount: {
+                    max: 0,
+                    min: 0,
+                },
+                carbohydratesAmount: {
+                    max: 0,
+                    min: 0,
+                },
+                proteinAmount: {
+                    max: 0,
+                    min: 0,
+                },
+            },
         };
     },
     methods: {
-        showNutri() {},
+        handleChangeNutri(type) {
+            switch (type) {
+                case "fat":
+                    console.log(this.nutriChangeInfo.fatAmount);
+                    this.nutriChangeInfo.carbohydratesAmount = Number.parseInt(
+                        (this.nutriChangeInfo.fatAmount / 9) * 4
+                    );
+                    this.nutriChangeInfo.proteinAmount = Number.parseInt(
+                        (this.nutriChangeInfo.fatAmount / 9) * 4
+                    );
+                    break;
+                case "protein":
+                    console.log(this.nutriChangeInfo.proteinAmount);
+                    this.nutriChangeInfo.carbohydratesAmount = Number.parseInt(
+                        this.nutriChangeInfo.proteinAmount
+                    );
+                    this.nutriChangeInfo.fatAmount = Number.parseInt(
+                        (this.nutriChangeInfo.proteinAmount / 4) * 9
+                    );
+                    break;
+                case "carbs":
+                    console.log(this.nutriChangeInfo.carbohydratesAmount);
+                    this.nutriChangeInfo.fatAmount = Number.parseInt(
+                        (this.nutriChangeInfo.fatAmount / 4) * 9
+                    );
+                    this.nutriChangeInfo.proteinAmount = Number.parseInt(
+                        this.nutriChangeInfo.fatAmount
+                    );
+                    break;
+                default:
+                    break;
+            }
+        },
+        async saveChangeNutri() {
+            try {
+                await apiPatch(
+                    `/userGoals/update-by-user/${this.userGoalId}`,
+                    this.nutriChangeInfo
+                );
+                this.$message({
+                    type: "success",
+                    message: "Update success",
+                });
+                this.nutriChange = false;
+            } catch (error) {
+                console.log(error);
+                this.$message({
+                    type: "error",
+                    message: "Update failed",
+                });
+            }
+        },
+        setDetailNutriInfo(nutrients) {
+            this.nutriChangeInfo.fatAmount = Number.parseInt(
+                nutrients?.find((x) => x.name == "Fat")?.amount
+            );
+            this.nutriChangeInfo.proteinAmount = Number.parseInt(
+                nutrients?.find((x) => x.name == "Protein")?.amount
+            );
+            this.nutriChangeInfo.carbohydratesAmount = Number.parseInt(
+                nutrients?.find((x) => x.name == "Carbohydrates")?.amount
+            );
+        },
+        calculateRangeNutri(TDEE) {
+            this.rangeValueNutrient.proteinAmount.min = Number.parseInt(
+                (0.1 * TDEE) / 4
+            );
+            this.rangeValueNutrient.proteinAmount.max = Number.parseInt(
+                (0.3 * TDEE) / 4
+            );
+            this.rangeValueNutrient.fatAmount.min = Number.parseInt(
+                (0.2 * TDEE) / 9
+            );
+            this.rangeValueNutrient.fatAmount.max = Number.parseInt(
+                (0.35 * TDEE) / 9
+            );
+            this.rangeValueNutrient.carbohydratesAmount.min = Number.parseInt(
+                (0.45 * TDEE) / 4
+            );
+            this.rangeValueNutrient.carbohydratesAmount.max = Number.parseInt(
+                (0.65 * TDEE) / 4
+            );
+        },
         logout() {
             localStorage.removeItem("tokenAuth");
             localStorage.removeItem("userInfo");

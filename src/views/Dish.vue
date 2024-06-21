@@ -121,7 +121,7 @@
                     <el-input
                         v-model.number="item1.quantity"
                         autocomplete="off"
-                        placeholder="Mg"
+                        placeholder="g"
                     />
                 </div>
                 <el-button
@@ -208,7 +208,22 @@
             style="width: 100%"
             height="460"
         >
-            <el-table-column label="Name" prop="name" />
+            <el-table-column label="Name" prop="name">
+                <template #default="scope">
+                    <b
+                        v-if="
+                            [
+                                'Calories',
+                                'Carbohydrates',
+                                'Fat',
+                                'Protein',
+                            ].includes(scope.row.name)
+                        "
+                        >{{ scope.row.name }}</b
+                    >
+                    <span v-else>{{ scope.row.name }}</span>
+                </template>
+            </el-table-column>
             <el-table-column label="Amount" prop="amount" />
             <el-table-column label="Unit" prop="unit" />
             <el-table-column label="Daily Need" prop="percentOfDailyNeeds" />

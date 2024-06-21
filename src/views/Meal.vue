@@ -284,17 +284,62 @@
             style="width: 100%"
             height="460"
         >
-            <el-table-column label="Name" prop="name" />
+            <el-table-column label="Name" prop="name">
+                <template #default="scope">
+                    <b
+                        v-if="
+                            [
+                                'Calories',
+                                'Carbohydrates',
+                                'Fat',
+                                'Protein',
+                            ].includes(scope.row.name)
+                        "
+                        >{{ scope.row.name }}</b
+                    >
+                    <span v-else>{{ scope.row.name }}</span>
+                </template>
+            </el-table-column>
             <el-table-column label="Amount" prop="amount">
                 <template #default="scope">
-                    <span>{{ scope.row.amount }}</span
-                    >/<b>{{
-                        userNeed.find((x) => x?.name == scope.row?.name)
-                            ?.amount || 0
-                    }}</b>
+                    <div v-if="scope.row.name == 'Calories'">
+                        <span>{{ scope.row.amount }}</span
+                        >/<b>{{ TDEE }}</b>
+                    </div>
+                    <div v-else>
+                        <span>{{ scope.row.amount }}</span
+                        >/<b>{{
+                            userNeed.find((x) => x?.name == scope.row?.name)
+                                ?.amount || 0
+                        }}</b>
+                    </div>
                 </template>
             </el-table-column>
             <el-table-column label="Unit" prop="unit" />
+            <el-table-column label="Progress">
+                <template #default="scope">
+                    <el-progress
+                        :text-inside="true"
+                        :stroke-width="24"
+                        :percentage="
+                            (() => {
+                                let actual = scope.row.amount;
+                                let expected =
+                                    userNeed.find(
+                                        (x) => x?.name == scope.row?.name
+                                    )?.amount || 1;
+                                let percent =
+                                    (actual / expected) * 100 > 100
+                                        ? 100
+                                        : (actual / expected) * 100;
+                                return percent || 0;
+                            })()
+                        "
+                        status="success"
+                        style="width: 200px"
+                    />
+                </template>
+            </el-table-column>
         </el-table>
         <template #footer>
             <div class="dialog-footer">
@@ -328,9 +373,10 @@ const overviewData = ref(null);
 const lstDishes = ref([]);
 const selectedDate = ref("");
 const newDish = ref({
-    Id: 0,
+    Id: null,
     quantity: 1,
 });
+const TDEE = ref(0);
 const userNeed = ref(null);
 const newMeal = ref({
     name: "",
@@ -498,6 +544,12 @@ onMounted(async () => {
     );
     isLoadingTable.value = false;
     lstDishes.value = await apiGet("/dishes/findAll");
+    let userGoal = await apiGet(
+        `/userGoals/findOne/${
+            JSON.parse(localStorage.getItem("userGoalId")) || 1
+        }`
+    );
+    TDEE.value = userGoal?.TDEE;
 });
 
 const lstDateMeal = computed(() => {

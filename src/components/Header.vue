@@ -42,7 +42,7 @@ import avatarGenerate from "../utils/avatarGenerator.js";
 import router from "../router/index.js";
 
 const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-const isAdmin = userInfo.roleId == 1;
+const isAdmin = userInfo?.roleId == 1;
 const userInfoName = userInfo?.name;
 
 const toUser = () => {

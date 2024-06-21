@@ -4,8 +4,16 @@
             <!-- home section starts -->
             <section class="home" id="home">
                 <div class="content">
-                    <h3>welcome to the place full of healthy food</h3>
-                    <a href="#" class="btn"> read more</a>
+                    <h3 style="color: black; text-align: left">
+                        WELCOME TO THE HEALTH CARE WEBSITE AND DIET MANAGEMENT
+                    </h3>
+                    <a
+                        href="https://www.niehs.nih.gov/health/topics/nutrition"
+                        class="btn"
+                        style="float: left"
+                    >
+                        read more</a
+                    >
                 </div>
             </section>
 
@@ -23,22 +31,67 @@
                             health.
                         </h3>
                         <p>
-                            Lorem ipsum dolor sit amet consectetur adipisicing
-                            elit. Maiores aliquam quia qui delectus ex iusto
-                            architecto odit possimus cumque non aperiam hic
-                            deserunt, eveniet eaque doloremque? Magnam
-                            accusantium vel debitis? Expedita placeat enim,
-                            repellat amet sequi tenetur at odio debitis
-                            distinctio sapiente soluta sit inventore tempore
-                            modi consectetur nisi nihil, ad cum sed. Possimus
-                            temporibus dolore enim maiores velit rem.
-                            Voluptatibus fuga, distinctio nesciunt repellat
-                            neque optio laboriosam tempora eaque accusantium
-                            nobis quibusdam aut natus tenetur amet vero quaerat
-                            molestias cum a est in quasi voluptate sapiente
-                            corporis. Quasi, exercitationem?
+                            What we eat is considered an environmental factor
+                            that influences health, in positive and negative
+                            ways. Healthy diets with an optimal balance of
+                            nutrients help people accomplish daily physical
+                            activities and mental processes. Within your diet, a
+                            deficiency or excess of certain nutrients can affect
+                            health. The term diet refers to foods and beverages
+                            consumed over time in all settings, such as
+                            worksites, schools, restaurants, and the home. Diet
+                            also often means a specific nutritional plan or
+                            eating pattern. Nutrition is the process of
+                            consuming, absorbing, and using nutrients from food
+                            that are necessary for growth, development, and
+                            maintenance of life.
                         </p>
-                        <a href="#" class="btn"> read more</a>
+                        <p>
+                            What Are Nutrients? Nutrients give your body energy
+                            and enable bodily functions. They are usually
+                            classified in two major groups: Macronutrients, in
+                            the form of protein, carbohydrate, or fat, primarily
+                            provide energy to your body. The different
+                            macronutrients serve different energy pathways and
+                            functions in the body. Energy from macronutrients in
+                            food is measured in units called calories.
+                            Micronutrients, known as vitamins and minerals, are
+                            required by the body in minute amounts. They protect
+                            and promote various bodily functions, including
+                            processing energy from macronutrients. Although
+                            critical to health, micronutrients do not supply
+                            energy.
+                        </p>
+                        <p>
+                            More than half of U.S. adults – 129 million people –
+                            have one or more preventable chronic diseases, such
+                            as cardiovascular disease, high blood pressure, type
+                            2 diabetes, and some cancers, which are often
+                            related to diet and physical inactivity. Beyond
+                            health effects, nutrition-related diseases create
+                            strains on productivity, health care spending,
+                            health disparities, and military readiness.
+                            Addressing such issues requires understanding
+                            interrelated biological and social environmental
+                            determinants, and corresponding solutions. As a
+                            scientific field, nutrition is integral to health
+                            promotion and disease prevention. Information from
+                            many disciplines, including anthropology, biology,
+                            biochemistry, economics, epidemiology, food science
+                            and technology, genetics, physiology, psychology,
+                            and sociology, are applied in nutritional studies.
+                            Scientists consider what people eat and drink, and
+                            take as dietary supplements, during different life
+                            stages and over time. They focus on interconnections
+                            to build evidence for public policy, health system,
+                            and environmental improvement strategies.
+                        </p>
+                        <a
+                            href="https://www.niehs.nih.gov/health/topics/nutrition"
+                            class="btn"
+                        >
+                            read more</a
+                        >
                     </div>
 
                     <div class="image">
@@ -60,30 +113,15 @@
                             <img src="../assets/images/service-1.png" alt="" />
                         </div>
                         <div class="content">
-                            <h3>arranging a nutrition plan</h3>
+                            <h3>Plan your meals</h3>
                             <div class="line"></div>
                             <p>
-                                Lorem ipsum dolor sit amet consectetur,
-                                adipisicing elit. Fuga, itaque.
+                                Plan your meals for the week using recipes or
+                                even your own created dishes. Nutritional
+                                information for meals is automatically
+                                calculated and saved in history so you can
+                                easily manage automatic calculations.
                             </p>
-                            <ul>
-                                <li>
-                                    <i class="fas fa-check"></i>Lorem ipsum
-                                    dolor sit amet cons
-                                </li>
-                                <li>
-                                    <i class="fas fa-check"></i>Lorem ipsum
-                                    dolor sit amet cons
-                                </li>
-                                <li>
-                                    <i class="fas fa-check"></i>Lorem ipsum
-                                    dolor sit amet cons
-                                </li>
-                                <li>
-                                    <i class="fas fa-check"></i>Lorem ipsum
-                                    dolor sit amet cons
-                                </li>
-                            </ul>
                         </div>
                     </div>
 
@@ -92,30 +130,17 @@
                             <img src="../assets/images/service-2.png" alt="" />
                         </div>
                         <div class="content">
-                            <h3>arranging a nutrition plan</h3>
+                            <h3>
+                                dietary reference intake nutritional for you
+                            </h3>
                             <div class="line"></div>
                             <p>
-                                Lorem ipsum dolor sit amet consectetur,
-                                adipisicing elit. Fuga, itaque.
+                                We tell you how much water, calories,
+                                macronutrients and vitamins you should consume
+                                daily - all estimates are based on your gender,
+                                age, activity level, weight, and special
+                                conditions your body.
                             </p>
-                            <ul>
-                                <li>
-                                    <i class="fas fa-check"></i>Lorem ipsum
-                                    dolor sit amet cons
-                                </li>
-                                <li>
-                                    <i class="fas fa-check"></i>Lorem ipsum
-                                    dolor sit amet cons
-                                </li>
-                                <li>
-                                    <i class="fas fa-check"></i>Lorem ipsum
-                                    dolor sit amet cons
-                                </li>
-                                <li>
-                                    <i class="fas fa-check"></i>Lorem ipsum
-                                    dolor sit amet cons
-                                </li>
-                            </ul>
                         </div>
                     </div>
 
@@ -124,38 +149,21 @@
                             <img src="../assets/images/service-3.png" alt="" />
                         </div>
                         <div class="content">
-                            <h3>arranging a nutrition plan</h3>
+                            <h3>statistics and comparison</h3>
                             <div class="line"></div>
                             <p>
-                                Lorem ipsum dolor sit amet consectetur,
-                                adipisicing elit. Fuga, itaque.
+                                We rely on information about the meals you have
+                                eaten during the day, then synthesize and
+                                analyze nutritional information to compare with
+                                your recommended nutritional intake. Helps you
+                                have the most overview of your diet
                             </p>
-                            <ul>
-                                <li>
-                                    <i class="fas fa-check"></i>Lorem ipsum
-                                    dolor sit amet cons
-                                </li>
-                                <li>
-                                    <i class="fas fa-check"></i>Lorem ipsum
-                                    dolor sit amet cons
-                                </li>
-                                <li>
-                                    <i class="fas fa-check"></i>Lorem ipsum
-                                    dolor sit amet cons
-                                </li>
-                                <li>
-                                    <i class="fas fa-check"></i>Lorem ipsum
-                                    dolor sit amet cons
-                                </li>
-                            </ul>
                         </div>
                     </div>
                 </div>
             </section>
 
             <!-- services section ends -->
-
-            <!-- review section ends -->
         </template>
     </MainLayout>
 </template>
@@ -170,10 +178,12 @@ section {
     min-height: 100vh;
     display: flex;
     align-items: center;
-    justify-content: center;
-    background: url(../assets/images/home.jpg) no-repeat;
+    justify-content: flex-start;
+    background: url(../assets/images/slider1.jpg) no-repeat;
     background-size: cover;
     background-attachment: fixed;
+    background-position: left;
+    filter: brightness(0.8);
 }
 
 .home .content {
