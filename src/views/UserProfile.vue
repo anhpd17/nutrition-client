@@ -339,34 +339,166 @@ export default {
         };
     },
     methods: {
+        slideProtein(spVal) {
+            let currentCarbVal = this.nutriChangeInfo.carbohydratesAmount;
+            let currentFatVal = this.nutriChangeInfo.fatAmount;
+            let spRemainingEnergy = this.userGoal.TDEE - spVal * 4;
+
+            let newCarbVal =
+                (spRemainingEnergy * currentCarbVal) /
+                (currentCarbVal * 4 + currentFatVal * 9);
+            let newFatVal =
+                (spRemainingEnergy * currentFatVal) /
+                (currentCarbVal * 4 + currentFatVal * 9);
+            let newProteinVal = spVal;
+
+            if (newFatVal < this.rangeValueNutrient.fatAmount.min) {
+                newFatVal = this.rangeValueNutrient.fatAmount.min;
+                newCarbVal = (spRemainingEnergy - newFatVal * 9) / 4;
+            } else if (newFatVal > this.rangeValueNutrient.fatAmount.max) {
+                newFatVal = this.rangeValueNutrient.fatAmount.max;
+                newCarbVal = (spRemainingEnergy - newFatVal * 9) / 4;
+            }
+
+            if (newCarbVal < this.rangeValueNutrient.carbohydratesAmount.min) {
+                newCarbVal = this.rangeValueNutrient.carbohydratesAmount.min;
+                newFatVal = (spRemainingEnergy - newCarbVal * 4) / 9;
+                if (newFatVal < this.rangeValueNutrient.fatAmount.min) {
+                    newFatVal = this.rangeValueNutrient.fatAmount.min;
+                    newProteinVal =
+                        (this.userGoal.TDEE - newCarbVal * 4 - newFatVal * 9) /
+                        4;
+                    this.nutriChangeInfo.proteinAmount =
+                        Math.round(newProteinVal);
+                }
+            } else if (
+                newCarbVal > this.rangeValueNutrient.carbohydratesAmount.max
+            ) {
+                newCarbVal = this.rangeValueNutrient.carbohydratesAmount.max;
+                newFatVal = (spRemainingEnergy - newCarbVal * 4) / 9;
+                if (newFatVal > this.rangeValueNutrient.fatAmount.max) {
+                    newFatVal = this.rangeValueNutrient.fatAmount.max;
+                    newProteinVal =
+                        (this.userGoal.TDEE -
+                            newCarbVal * 3.75 -
+                            newFatVal * 8.8) /
+                        4.1;
+                    this.nutriChangeInfo.proteinAmount =
+                        Math.round(newProteinVal);
+                }
+            }
+            this.nutriChangeInfo.proteinAmount = Math.round(newProteinVal);
+            this.nutriChangeInfo.carbohydratesAmount = Math.round(newCarbVal);
+            this.nutriChangeInfo.fatAmount = Math.round(newFatVal);
+        },
+
+        slideCarb(scVal) {
+            let currentProteinVal = this.nutriChangeInfo.proteinAmount;
+            let currentFatVal = this.nutriChangeInfo.fatAmount;
+            let scRemainingEnergy = this.userGoal.TDEE - scVal * 4;
+
+            let newFatVal = (scRemainingEnergy - currentProteinVal * 4) / 9;
+            let newCarbVal = scVal;
+            let newProteinVal = currentProteinVal;
+
+            if (newFatVal < this.rangeValueNutrient.fatAmount.min) {
+                newFatVal = this.rangeValueNutrient.fatAmount.min;
+                newProteinVal = (scRemainingEnergy - newFatVal * 9) / 4;
+                if (newProteinVal < this.rangeValueNutrient.proteinAmount.min) {
+                    newProteinVal = this.rangeValueNutrient.proteinAmount.min;
+                    newCarbVal =
+                        (this.userGoal.TDEE -
+                            newProteinVal * 4 -
+                            newFatVal * 9) /
+                        4;
+                    this.nutriChangeInfo.carbohydratesAmount =
+                        Math.round(newCarbVal);
+                }
+            } else if (newFatVal > this.rangeValueNutrient.fatAmount.maxValue) {
+                newFatVal = this.rangeValueNutrient.fatAmount.max;
+                newProteinVal = (scRemainingEnergy - newFatVal * 9) / 4;
+                if (newProteinVal > this.rangeValueNutrient.proteinAmount.max) {
+                    newProteinVal = this.rangeValueNutrient.proteinAmount.max;
+                    newCarbVal =
+                        (this.userGoal.TDEE -
+                            newProteinVal * 4 -
+                            newFatVal * 9) /
+                        4;
+                    this.nutriChangeInfo.carbohydratesAmount =
+                        Math.round(newCarbVal);
+                }
+            }
+            this.nutriChangeInfo.proteinAmount = Math.round(newProteinVal);
+            this.nutriChangeInfo.carbohydratesAmount = Math.round(newCarbVal);
+            this.nutriChangeInfo.fatAmount = Math.round(newFatVal);
+        },
+
+        slideFat(sfVal) {
+            let currentCarbVal = this.nutriChangeInfo.carbohydratesAmount;
+            let currentProteinVal = this.nutriChangeInfo.proteinAmount;
+            let sfRemainingEnergy = this.userGoal.TDEE - sfVal * 9;
+
+            let newCarbVal =
+                (sfRemainingEnergy * currentCarbVal) /
+                (currentCarbVal * 4 + currentProteinVal * 4);
+            let newProteinVal =
+                (sfRemainingEnergy * currentProteinVal) /
+                (currentCarbVal * 4 + currentProteinVal * 4);
+            let newFatVal = sfVal;
+
+            if (newProteinVal < this.rangeValueNutrient.proteinAmount.min) {
+                newProteinVal = this.rangeValueNutrient.proteinAmount.min;
+                newCarbVal = (sfRemainingEnergy - newProteinVal * 4) / 4;
+            } else if (
+                newProteinVal > this.rangeValueNutrient.proteinAmount.max
+            ) {
+                newProteinVal = this.rangeValueNutrient.proteinAmount.max;
+                newCarbVal = (sfRemainingEnergy - newProteinVal * 4) / 4;
+            }
+
+            if (newCarbVal < this.rangeValueNutrient.carbohydratesAmount.min) {
+                newCarbVal = this.rangeValueNutrient.carbohydratesAmount.min;
+                newProteinVal = (sfRemainingEnergy - newCarbVal * 4) / 4;
+                if (newProteinVal < this.rangeValueNutrient.proteinAmount.min) {
+                    newProteinVal = this.rangeValueNutrient.proteinAmount.min;
+                    newFatVal =
+                        (this.userGoal.TDEE -
+                            newCarbVal * 4 -
+                            newProteinVal * 4) /
+                        9;
+                    this.nutriChangeInfo.fatAmount = Math.round(newFatVal);
+                }
+            } else if (
+                newCarbVal > this.rangeValueNutrient.carbohydratesAmount.max
+            ) {
+                newCarbVal = this.rangeValueNutrient.carbohydratesAmount.max;
+                newProteinVal = (sfRemainingEnergy - newCarbVal * 4) / 4;
+                if (newProteinVal > this.rangeValueNutrient.proteinAmount.max) {
+                    newProteinVal = this.rangeValueNutrient.proteinAmount.max;
+                    newFatVal =
+                        (this.userGoal.TDEE -
+                            newCarbVal * 4 -
+                            newProteinVal * 4) /
+                        9;
+                    this.nutriChangeInfo.proteinAmount =
+                        Math.round(newProteinVal);
+                }
+            }
+            this.nutriChangeInfo.carbohydratesAmount = Math.round(newCarbVal);
+            this.nutriChangeInfo.proteinAmount = Math.round(newProteinVal);
+            this.nutriChangeInfo.fatAmount = Math.round(newFatVal);
+        },
+
         handleChangeNutri(type) {
             switch (type) {
                 case "fat":
-                    console.log(this.nutriChangeInfo.fatAmount);
-                    this.nutriChangeInfo.carbohydratesAmount = Number.parseInt(
-                        (this.nutriChangeInfo.fatAmount / 9) * 4
-                    );
-                    this.nutriChangeInfo.proteinAmount = Number.parseInt(
-                        (this.nutriChangeInfo.fatAmount / 9) * 4
-                    );
+                    this.slideFat(this.nutriChangeInfo.fatAmount);
                     break;
                 case "protein":
-                    console.log(this.nutriChangeInfo.proteinAmount);
-                    this.nutriChangeInfo.carbohydratesAmount = Number.parseInt(
-                        this.nutriChangeInfo.proteinAmount
-                    );
-                    this.nutriChangeInfo.fatAmount = Number.parseInt(
-                        (this.nutriChangeInfo.proteinAmount / 4) * 9
-                    );
+                    this.slideProtein(this.nutriChangeInfo.proteinAmount);
                     break;
                 case "carbs":
-                    console.log(this.nutriChangeInfo.carbohydratesAmount);
-                    this.nutriChangeInfo.fatAmount = Number.parseInt(
-                        (this.nutriChangeInfo.fatAmount / 4) * 9
-                    );
-                    this.nutriChangeInfo.proteinAmount = Number.parseInt(
-                        this.nutriChangeInfo.fatAmount
-                    );
+                    this.slideCarb(this.nutriChangeInfo.carbohydratesAmount);
                     break;
                 default:
                     break;
