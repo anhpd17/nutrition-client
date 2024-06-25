@@ -123,6 +123,12 @@
                         autocomplete="off"
                         placeholder="g"
                     />
+                    <el-button
+                        type="danger"
+                        :icon="Delete"
+                        circle
+                        @click="spliceAddDishIngre(index1)"
+                    />
                 </div>
                 <el-button
                     size="small"
@@ -140,6 +146,7 @@
             </div>
         </template>
     </el-dialog>
+    <!-- FORM EDIT DISH -->
     <el-dialog v-model="detailVisible" title="Edit Dish" width="600">
         <el-form :model="detailDish" :label-width="150" label-position="left">
             <el-form-item label="Name">
@@ -181,6 +188,12 @@
                     <el-input
                         v-model.number="item1.Quantity"
                         autocomplete="off"
+                    />
+                    <el-button
+                        type="danger"
+                        :icon="Delete"
+                        circle
+                        @click="spliceDishIngre(index1)"
                     />
                 </div>
                 <el-button
@@ -244,6 +257,7 @@
 import MainLayout from "../layouts/MainLayout.vue";
 import { computed, ref, onMounted } from "vue";
 import { apiGet, apiPost, apiPatch, apiDeleteMany } from "../api/api";
+import { Delete } from "@element-plus/icons-vue";
 
 const search = ref("");
 const tableData = ref([]);
@@ -267,6 +281,10 @@ const newDish = ref({
     ],
 });
 
+const spliceDishIngre = (index) => {
+    detailDish.value.dishIngredients.splice(index, 1);
+};
+
 const handleNutritions = (index, row) => {
     detailNutrient.value = row.nutrients;
     visibleNutrient.value = true;
@@ -275,7 +293,7 @@ const handleNutritions = (index, row) => {
 const remoteMethod = async (query) => {
     if (query) {
         lstIngredients.value = await apiGet(
-            `/ingredient/findAll?name=${query}&take=10&page=1`
+            `/ingredient/findAllName?name=${query}`
         );
     }
 };
@@ -291,6 +309,9 @@ const addMoreIngre = () => {
         ingredientId: null,
         quantity: null,
     });
+};
+const spliceAddDishIngre = (index) => {
+    newDish.value.ingredients.splice(index, 1);
 };
 
 const resetFormNew = () => {
@@ -412,7 +433,7 @@ onMounted(async () => {
         console.log(error);
     }
     isLoadingTable.value = false;
-    lstIngredients.value = await apiGet("/ingredient/findAll?take=10&page=1");
+    lstIngredients.value = await apiGet("/ingredient/findAll");
 });
 </script>
 <style>
