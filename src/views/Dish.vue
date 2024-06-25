@@ -433,7 +433,9 @@ onMounted(async () => {
         console.log(error);
     }
     isLoadingTable.value = false;
-    lstIngredients.value = await apiGet("/ingredient/findAll");
+    let res = await apiGet("/ingredient/findAllName");
+    lstIngredients.value = res[0];
+    console.log(lstIngredients.value);
 });
 </script>
 <style>
