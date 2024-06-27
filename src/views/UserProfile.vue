@@ -1,6 +1,7 @@
 <template>
     <MainLayout>
         <template #main-layout-content>
+            <!-- Profile -->
             <div
                 style="
                     margin-top: 86px;
@@ -24,6 +25,7 @@
                     <el-button @click="logout">Logout</el-button>
                 </div>
             </div>
+            <!-- Statistic -->
             <div class="user-goal">
                 <el-form
                     label-position="left"
@@ -120,6 +122,11 @@
                         <el-form-item style="float: right; margin-right: 12px">
                             <el-button
                                 type="primary"
+                                @click="handleOpenWeekCompare"
+                                >Nutrition by week</el-button
+                            >
+                            <el-button
+                                type="primary"
                                 @click="() => (nutriChange = true)"
                                 >Change Nutritions</el-button
                             >
@@ -137,6 +144,85 @@
             </div>
         </template>
     </MainLayout>
+    <!-- FORM OVERVIEW WEEK -->
+    <el-dialog v-model="nutriweek" title="Overview" width="900">
+        <!-- Week picker -->
+        <el-date-picker
+            v-model="weekSelected"
+            type="week"
+            format="[Week] ww"
+            placeholder="Pick a week"
+            style="margin-bottom: 12px"
+            @change="onSelectWeek"
+        />
+        <!-- Table nutri compare -->
+        <el-table
+            v-loading="isLoadingTable"
+            :data="userWeekActual"
+            style="width: 100%"
+            height="460"
+        >
+            <el-table-column label="Name" prop="name">
+                <template #default="scope">
+                    <b
+                        v-if="
+                            [
+                                'Calories',
+                                'Carbohydrates',
+                                'Fat',
+                                'Protein',
+                            ].includes(scope.row.name)
+                        "
+                        >{{ scope.row.name }}</b
+                    >
+                    <span v-else>{{ scope.row.name }}</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="Amount" prop="amount">
+                <template #default="scope">
+                    <div>
+                        <span>{{ scope.row.amount }}</span
+                        >/<b>{{
+                            userWeekNeed.find((x) => x?.name == scope.row?.name)
+                                ?.amount || 0
+                        }}</b>
+                    </div>
+                </template>
+            </el-table-column>
+            <el-table-column label="Unit" prop="unit" />
+            <el-table-column label="Progress">
+                <template #default="scope">
+                    <el-progress
+                        :text-inside="true"
+                        :stroke-width="24"
+                        :percentage="
+                            (() => {
+                                let actual = scope.row.amount;
+                                let expected =
+                                    userWeekNeed.find(
+                                        (x) => x?.name == scope.row?.name
+                                    )?.amount || 1;
+                                let percent =
+                                    (actual / expected) * 100 > 100
+                                        ? 100
+                                        : (actual / expected) * 100;
+                                return Number.parseInt(percent) || 0;
+                            })()
+                        "
+                        status="success"
+                        style="width: 200px"
+                    />
+                </template>
+            </el-table-column>
+        </el-table>
+        <template #footer>
+            <div class="dialog-footer">
+                <el-button type="success" @click="() => (nutriweek = false)">
+                    Okay
+                </el-button>
+            </div>
+        </template>
+    </el-dialog>
     <!-- Nutrition Change -->
     <el-dialog v-model="nutriChange" title="Change Nutrition" width="600">
         <el-form :model="userGoal" :label-width="150" label-position="left">
@@ -301,6 +387,11 @@ export default {
     },
     data() {
         return {
+            isLoadingTable: false,
+            weekSelected: null,
+            nutriweek: false,
+            userWeekNeed: null,
+            userWeekActual: null,
             nutriChange: false,
             nutriChangeInfo: {
                 proteinAmount: 0,
@@ -339,6 +430,47 @@ export default {
         };
     },
     methods: {
+        addNameProperty(obj) {
+            const newData = [];
+            for (const key in obj) {
+                newData.push({ ...obj[key], name: key }); // Spread operator to avoid mutation
+            }
+            return newData;
+        },
+        formatDateRange(dateString) {
+            const date = new Date(dateString);
+
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0"); // Add leading zero for single-digit months
+            const day = String(date.getDate()).padStart(2, "0"); // Add leading zero for single-digit days
+
+            return `${year}-${month}-${day}`;
+        },
+        async onSelectWeek($event) {
+            const startOfWeek = new Date($event.getTime());
+            startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+            const endOfWeek = new Date(startOfWeek.getTime());
+            endOfWeek.setDate(endOfWeek.getDate() + 6);
+            let rangeWeek = {
+                startDate: this.formatDateRange(startOfWeek),
+                endDate: this.formatDateRange(endOfWeek),
+            };
+            let response = await apiGet(
+                `/userGoals/get-nutrition-week?userId=${this.userGoal.userId}&startDate=${rangeWeek.startDate}&endDate=${rangeWeek.endDate}`
+            );
+            this.userWeekActual = this.addNameProperty(
+                response.nutritionalInfo
+            );
+        },
+        async handleOpenWeekCompare() {
+            // Call API get UserWeekNeed & actual
+            let response = await apiGet(
+                `/userGoals/getWeekUser/${this.userGoal.userId}`
+            );
+            this.userWeekNeed = this.addNameProperty(response.nutritionalInfo);
+            // Show popup
+            this.nutriweek = true;
+        },
         slideProtein(spVal) {
             let currentCarbVal = this.nutriChangeInfo.carbohydratesAmount;
             let currentFatVal = this.nutriChangeInfo.fatAmount;
